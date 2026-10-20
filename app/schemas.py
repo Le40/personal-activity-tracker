@@ -12,9 +12,11 @@ class ActivitySessionResponse(BaseModel):
     activity_type: str
     started_at: datetime
     ended_at: datetime | None
+    notes: str | None
 
-class ActivitySessionCreate(BaseModel):
+class ActivitySessionInput(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
     name: str = Field(min_length=1, max_length=30)
     activity_type: Literal['work', 'exercise', 'meal', 'break', 'other']
+    notes: str | None = None

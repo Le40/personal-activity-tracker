@@ -18,6 +18,8 @@ class ActivitySession(Base):
     started_at: Mapped[datetime] = mapped_column(DateTime)
     ended_at: Mapped[datetime | None] = mapped_column(DateTime)
 
+    notes: Mapped[str | None] = mapped_column(nullable=True)
+
 running_session_index = Index(
     "uq_one_running_session",
     ActivitySession.ended_at.is_(None),

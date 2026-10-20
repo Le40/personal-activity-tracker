@@ -154,3 +154,26 @@ def test_only_one_running_session_allowed(tmp_path):
         session.rollback()
 
     test_engine.dispose()
+
+    def test_update_session(client):
+        response = client.post(
+            "/sessions/start", json={"name": "python", "activity_type": "work"})
+        assert response.status_code == 201
+
+        original = response.json()
+
+        update_response = client.put(
+            f"/sessions/{response.json()["id"]}", 
+            json={"name": "python88", "activity_type": "work", "notes": "some notes"})
+
+        assert update_response.status_code == 200
+
+        updated = update_response.json()
+
+        assert updated["id"] == original["id"]
+        assert updated["started_at"] == original["started_at"]
+        assert updated["ended_at"] is None
+
+        assert updated["name"] == "python88"
+        assert updated["activity_type"] == "meal"
+        assert updated["notes"] == "some notes"
