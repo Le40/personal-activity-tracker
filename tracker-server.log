@@ -712,3 +712,25 @@ WHERE activity_session.id = ?
 FROM activity_session
 2026-10-21 19:13:52,356 INFO sqlalchemy.engine.Engine [cached since 35.78s ago] ()
 2026-10-21 19:13:52,357 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 21:08:34,975 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 21:08:34,982 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 21:08:34,983 INFO sqlalchemy.engine.Engine [generated in 0.00044s] ()
+2026-10-21 21:08:34,987 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 21:08:35,181 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 21:08:35,183 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.ended_at > ? AND activity_session.ended_at <= ?
+2026-10-21 21:08:35,183 INFO sqlalchemy.engine.Engine [generated in 0.00055s] ('2026-10-21 03:00:00.000000', '2026-10-22 03:00:00.000000')
+2026-10-21 21:08:35,186 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 21:08:38,012 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 21:08:38,012 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 21:08:38,012 INFO sqlalchemy.engine.Engine [cached since 3.03s ago] ()
+2026-10-21 21:08:38,016 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 21:08:38,022 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 21:08:38,023 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.ended_at > ? AND activity_session.ended_at <= ?
+2026-10-21 21:08:38,023 INFO sqlalchemy.engine.Engine [cached since 2.84s ago] ('2026-10-21 03:00:00.000000', '2026-10-22 03:00:00.000000')
+2026-10-21 21:08:38,025 INFO sqlalchemy.engine.Engine ROLLBACK

@@ -10,12 +10,20 @@ from app.models import Base
 
 
 @pytest.fixture
-def client(tmp_path):
+def test_engine(tmp_path):
     test_db = tmp_path / "test.db"
-    test_engine = create_engine(f"sqlite:///{test_db.as_posix()}")
+    engine = create_engine(f"sqlite:///{test_db.as_posix()}")
 
-    Base.metadata.create_all(test_engine)
+    Base.metadata.create_all(engine)
 
+    try:
+        yield engine
+    finally:
+        engine.dispose()
+
+
+@pytest.fixture
+def client(test_engine):
     def override_get_session():
         with Session(test_engine) as session:
             yield session
@@ -23,7 +31,7 @@ def client(tmp_path):
     app.dependency_overrides[get_session] = override_get_session
 
     try:
-        yield TestClient(app)
+        with TestClient(app) as test_client:
+            yield test_client
     finally:
         app.dependency_overrides.clear()
-        test_engine.dispose()

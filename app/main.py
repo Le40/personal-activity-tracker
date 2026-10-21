@@ -1,7 +1,9 @@
+from zoneinfo import ZoneInfo
+
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import select
-from datetime import datetime, timezone
+from sqlalchemy import or_, select
+from datetime import date, datetime, time, timezone, timedelta
 from app.database import get_session
 from app.models import ActivitySession
 from app.schemas import ActivitySessionResponse, ActivitySessionInput
@@ -10,6 +12,7 @@ from app.options import ActivityType, EaseRating, EASE_LABELS, EASE_RATING_ACTIV
 from pathlib import Path
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+
 
 app = FastAPI()
 
@@ -32,8 +35,24 @@ def health_check():
 
 
 @app.get("/sessions", response_model=list[ActivitySessionResponse])
-def get_sessions(session: Session = Depends(get_session)):
-    return session.scalars(select(ActivitySession)).all()
+def get_sessions(day: date | None = None, session: Session = Depends(get_session)):
+    statement = select(ActivitySession)
+
+    if day is not None:
+        local_tz = ZoneInfo("Europe/Bratislava")
+
+        local_start = datetime.combine(day, time(5), tzinfo=local_tz)
+        local_end = datetime.combine(day + timedelta(days=1), time(5), tzinfo=local_tz)
+
+        day_start = local_start.astimezone(timezone.utc).replace(tzinfo=None)
+        day_end = local_end.astimezone(timezone.utc).replace(tzinfo=None)
+
+        statement = statement.where(
+            ActivitySession.ended_at > day_start,
+            ActivitySession.ended_at <= day_end    
+        )
+
+    return session.scalars(statement).all()
 
 
 @app.get("/sessions/{session_id}", response_model=ActivitySessionResponse)

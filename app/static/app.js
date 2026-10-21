@@ -199,11 +199,29 @@ function displayActivityForm() {
     }
 }
 
+function getReportingDay() {
+    const date = new Date();
+
+    // Before 05:00, we're still in the previous reporting day.
+    if (date.getHours() < 5) {
+        date.setDate(date.getDate() - 1);
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+}
+
 
 // LOAD ACTIVITIES
 
 async function loadSessions() {
     const sessions = await apiRequest("/sessions");
+
+    const reportingDay = getReportingDay();
+    const historySessions = await apiRequest(`/sessions?day=${reportingDay}`);
 
     activeActivity = sessions.find(
         activity => activity.ended_at === null
@@ -211,7 +229,7 @@ async function loadSessions() {
 
     displayActivityForm();
 
-    const completed = sessions
+    const completed = historySessions
         .filter(activity => activity.ended_at !== null)
         .sort((a, b) =>
             parseTimestamp(a.started_at) -
