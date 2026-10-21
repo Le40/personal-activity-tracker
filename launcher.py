@@ -7,11 +7,34 @@ import time
 import urllib.request
 from pathlib import Path
 
+# --------------------------------------------------
+# APPLICATION SETTINGS
+# --------------------------------------------------
+HOST = "127.0.0.1"
+PORT = 8000
+LOG_LEVEL = "warning"
 
+# --------------------------------------------------
+# WINDOW SETTINGS
+# --------------------------------------------------
+WINDOW_WIDTH = 350
+WINDOW_HEIGHT = 650
+
+# --------------------------------------------------
+# PATHS
+# --------------------------------------------------
 PROJECT_DIR = Path(__file__).resolve().parent
-URL = "http://127.0.0.1:8000/"
 EDGE_PROFILE = Path(os.environ["LOCALAPPDATA"]) / "ActivityTrackerEdge"
 
+# --------------------------------------------------
+# DERIVED SETTINGS
+# --------------------------------------------------
+URL = f"http://{HOST}:{PORT}/"
+
+
+# --------------------------------------------------
+# FIND MICROSOFT EDGE
+# --------------------------------------------------
 
 def find_edge():
     locations = [
@@ -28,6 +51,10 @@ def find_edge():
     raise FileNotFoundError("Microsoft Edge was not found.")
 
 
+# --------------------------------------------------
+# WAIT FOR FASTAPI
+# --------------------------------------------------
+
 def wait_for_server(server):
     for _ in range(50):
         if server.poll() is not None:
@@ -42,23 +69,30 @@ def wait_for_server(server):
     raise RuntimeError("FastAPI did not become ready.")
 
 
+# --------------------------------------------------
+# APPLICATION LAUNCHER
+# --------------------------------------------------
+
 def main():
-    # Avoid starting a second server on the same port.
+    # Prevent starting a second server on the same port.
     with socket.socket() as connection:
-        if connection.connect_ex(("127.0.0.1", 8000)) == 0:
-            raise RuntimeError("Port 8000 is already in use. Close the previous server.")
+        if connection.connect_ex((HOST, PORT)) == 0:
+            raise RuntimeError(
+                f"Port {PORT} is already in use. Close the previous server."
+            )
 
     edge = find_edge()
 
+    # Start FastAPI without opening a console window.
     with open(PROJECT_DIR / "tracker-server.log", "a") as log:
         server = subprocess.Popen(
             [
                 sys.executable,
                 "-m", "uvicorn",
                 "app.main:app",
-                "--host", "127.0.0.1",
-                "--port", "8000",
-                "--log-level", "warning",
+                "--host", HOST,
+                "--port", str(PORT),
+                "--log-level", LOG_LEVEL,
             ],
             cwd=PROJECT_DIR,
             stdout=log,
@@ -69,15 +103,16 @@ def main():
         try:
             wait_for_server(server)
 
+            # Open the application in a compact Edge window.
             browser = subprocess.Popen([
                 str(edge),
                 f"--user-data-dir={EDGE_PROFILE}",
                 f"--app={URL}",
-                "--window-size=300,600",
+                f"--window-size={WINDOW_WIDTH},{WINDOW_HEIGHT}",
                 "--disable-background-mode",
             ])
 
-            # Wait until the Edge process exits.
+            # Keep FastAPI running while the Edge window is open.
             browser.wait()
 
         finally:
@@ -86,6 +121,10 @@ def main():
                 server.terminate()
                 server.wait(timeout=5)
 
+
+# --------------------------------------------------
+# ENTRY POINT
+# --------------------------------------------------
 
 if __name__ == "__main__":
     try:

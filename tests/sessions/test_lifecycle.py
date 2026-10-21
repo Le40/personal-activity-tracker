@@ -1,39 +1,23 @@
-from fastapi.testclient import TestClient
-from datetime import datetime, timezone
-from app.main import app
-
 import pytest
+
+from datetime import datetime, timezone
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from app.database import get_session
 from app.models import Base, ActivitySession
 
-@pytest.fixture
-def client(tmp_path):
-    test_db = tmp_path / "test.db"
-    test_engine = create_engine(f"sqlite:///{test_db.as_posix()}")
-
-    Base.metadata.create_all(test_engine)
-
-    def override_get_session():
-        with Session(test_engine) as session:
-            yield session
-
-    app.dependency_overrides[get_session] = override_get_session
-
-    try:
-        yield TestClient(app)
-    finally:
-        app.dependency_overrides.clear()
-        test_engine.dispose()
 
 def test_health_check(client):
     response = client.get("/health")
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+
+def test_get_nonexistent_session(client):
+    response = client.get("/sessions/999")
+
+    assert response.status_code == 404
 
 def test_stop_without_active_session(client):
     response = client.post("/sessions/stop")
@@ -47,6 +31,7 @@ def test_start_session(client):
         json={"name": "Python", "activity_type": "work"}
     )
     data = response.json()
+    session_id = data["id"]
 
     assert response.status_code == 201
     assert data["name"] == "Python"
@@ -56,12 +41,11 @@ def test_start_session(client):
     assert data["id"] is not None
     assert isinstance(data["id"], int)
 
-    get_response = client.get("/sessions")
-    sessions = get_response.json()
-
+    get_response = client.get(f"/sessions/{session_id}")
     assert get_response.status_code == 200
-    assert len(sessions) == 1
-    assert sessions[0]["id"] == data["id"]
+
+    get_data = get_response.json()
+    assert get_response.json() == data
 
 def test_switch_session(client):
     first= client.post("/sessions/start", json={"name": "Python", "activity_type": "work"})
@@ -91,22 +75,27 @@ def test_switch_session(client):
     assert second_session["started_at"] == first_session["ended_at"]
 
 def test_stop_session(client):
-    first = client.post("/sessions/start", json={"name": "Python", "activity_type": "work"})
-    response = client.post("/sessions/stop")
+    start_response = client.post("/sessions/start", json={"name": "Python", "activity_type": "work"})
+    assert start_response.status_code == 201
 
-    assert first.status_code == 201
-    assert response.status_code == 200
-    assert first.json()["ended_at"] is None
-    assert response.json()["ended_at"] is not None
-    assert first.json()["id"] == response.json()["id"]
+    start_data = start_response.json()
+    session_id = start_data["id"]
+    assert start_data["ended_at"] is None
 
-    get_response = client.get("/sessions")
-    sessions = get_response.json()
+    stop_response = client.post("/sessions/stop")
+    assert stop_response.status_code == 200
 
+    stop_data = stop_response.json()
+    assert stop_data["ended_at"] is not None
+    assert stop_data["id"] == start_data["id"]
+
+    get_response = client.get(f"/sessions/{session_id}")
     assert get_response.status_code == 200
-    assert len(sessions) == 1
-    assert sessions[0]["id"] == first.json()["id"]
-    assert sessions[0]["ended_at"] == response.json()["ended_at"]
+
+    get_data = get_response.json()
+
+    assert get_data["id"] == start_data["id"]
+    assert get_data["ended_at"] == stop_data["ended_at"]
 
 def test_start_invalid_name(client):
     response = client.post("/sessions/start", json={"name": " ", "activity_type": "work"})

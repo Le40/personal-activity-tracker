@@ -34,3 +34,681 @@ WHERE activity_session.id = ?
 FROM activity_session
 2026-10-20 22:20:27,389 INFO sqlalchemy.engine.Engine [cached since 8.665s ago] ()
 2026-10-20 22:20:27,391 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 11:06:11,890 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 11:06:11,896 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session
+2026-10-21 11:06:11,897 INFO sqlalchemy.engine.Engine [generated in 0.00132s] ()
+2026-10-21 11:06:11,904 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 11:06:48,281 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 11:06:48,282 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session 
+WHERE activity_session.ended_at IS NULL
+2026-10-21 11:06:48,282 INFO sqlalchemy.engine.Engine [generated in 0.00023s] ()
+2026-10-21 11:06:48,285 INFO sqlalchemy.engine.Engine INSERT INTO activity_session (name, activity_type, started_at, ended_at, notes) VALUES (?, ?, ?, ?, ?)
+2026-10-21 11:06:48,285 INFO sqlalchemy.engine.Engine [generated in 0.00037s] ('FastAPI - V1', 'work', '2026-10-21 09:06:48.280592', None, '')
+2026-10-21 11:06:48,287 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 11:06:48,294 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 11:06:48,296 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 11:06:48,296 INFO sqlalchemy.engine.Engine [generated in 0.00037s] (10,)
+2026-10-21 11:06:48,298 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 11:06:48,303 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 11:06:48,303 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session
+2026-10-21 11:06:48,303 INFO sqlalchemy.engine.Engine [cached since 36.41s ago] ()
+2026-10-21 11:06:48,305 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 11:07:07,759 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 11:07:07,760 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 11:07:07,760 INFO sqlalchemy.engine.Engine [generated in 0.00026s] ('10',)
+2026-10-21 11:07:07,767 INFO sqlalchemy.engine.Engine UPDATE activity_session SET notes=? WHERE activity_session.id = ?
+2026-10-21 11:07:07,767 INFO sqlalchemy.engine.Engine [generated in 0.00038s] ('- implementing autosave', 10)
+2026-10-21 11:07:07,770 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 11:07:07,775 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 11:07:07,775 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 11:07:07,776 INFO sqlalchemy.engine.Engine [cached since 19.48s ago] (10,)
+2026-10-21 11:07:07,777 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 11:07:07,780 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 11:07:07,780 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session
+2026-10-21 11:07:07,780 INFO sqlalchemy.engine.Engine [cached since 55.88s ago] ()
+2026-10-21 11:07:07,783 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 11:15:59,078 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 11:15:59,085 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session
+2026-10-21 11:15:59,085 INFO sqlalchemy.engine.Engine [generated in 0.00039s] ()
+2026-10-21 11:15:59,089 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 12:01:27,407 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 12:01:27,413 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 12:01:27,413 INFO sqlalchemy.engine.Engine [generated in 0.00075s] ('10',)
+2026-10-21 12:01:27,417 INFO sqlalchemy.engine.Engine UPDATE activity_session SET notes=? WHERE activity_session.id = ?
+2026-10-21 12:01:27,418 INFO sqlalchemy.engine.Engine [generated in 0.00026s] ('- implementing autosave\n-', 10)
+2026-10-21 12:01:27,424 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 12:01:27,431 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 12:01:27,433 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 12:01:27,433 INFO sqlalchemy.engine.Engine [generated in 0.00034s] (10,)
+2026-10-21 12:01:27,435 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 12:01:27,441 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 12:01:27,442 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session
+2026-10-21 12:01:27,442 INFO sqlalchemy.engine.Engine [cached since 2728s ago] ()
+2026-10-21 12:01:27,446 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 12:01:54,879 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 12:01:54,879 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 12:01:54,879 INFO sqlalchemy.engine.Engine [cached since 27.47s ago] ('10',)
+2026-10-21 12:01:54,880 INFO sqlalchemy.engine.Engine UPDATE activity_session SET notes=? WHERE activity_session.id = ?
+2026-10-21 12:01:54,880 INFO sqlalchemy.engine.Engine [cached since 27.46s ago] ('- implementing autosave\n- adding enums and ease_rating', 10)
+2026-10-21 12:01:54,886 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 12:01:54,895 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 12:01:54,896 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 12:01:54,896 INFO sqlalchemy.engine.Engine [cached since 27.46s ago] (10,)
+2026-10-21 12:01:54,898 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 12:01:54,901 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 12:01:54,902 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session
+2026-10-21 12:01:54,902 INFO sqlalchemy.engine.Engine [cached since 2756s ago] ()
+2026-10-21 12:01:54,908 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 12:11:00,542 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 12:11:00,543 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session
+2026-10-21 12:11:00,543 INFO sqlalchemy.engine.Engine [cached since 3301s ago] ()
+2026-10-21 12:11:00,546 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 12:40:05,876 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 12:40:05,877 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 12:40:05,877 INFO sqlalchemy.engine.Engine [cached since 2318s ago] ('10',)
+2026-10-21 12:40:05,883 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 12:40:05,883 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 12:40:05,884 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 12:40:05,884 INFO sqlalchemy.engine.Engine [cached since 2318s ago] (10,)
+2026-10-21 12:40:05,886 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 12:40:05,891 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 12:40:05,892 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session 
+WHERE activity_session.ended_at IS NULL
+2026-10-21 12:40:05,892 INFO sqlalchemy.engine.Engine [generated in 0.00035s] ()
+2026-10-21 12:40:05,896 INFO sqlalchemy.engine.Engine UPDATE activity_session SET ended_at=? WHERE activity_session.id = ?
+2026-10-21 12:40:05,897 INFO sqlalchemy.engine.Engine [generated in 0.00138s] ('2026-10-21 10:40:05.894168', 10)
+2026-10-21 12:40:05,900 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 12:40:05,906 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 12:40:05,906 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 12:40:05,906 INFO sqlalchemy.engine.Engine [cached since 2318s ago] (10,)
+2026-10-21 12:40:05,908 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 12:40:05,912 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 12:40:05,913 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes 
+FROM activity_session
+2026-10-21 12:40:05,913 INFO sqlalchemy.engine.Engine [cached since 5047s ago] ()
+2026-10-21 12:40:05,917 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:09:32,304 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:09:32,311 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 13:09:32,311 INFO sqlalchemy.engine.Engine [generated in 0.00052s] ()
+2026-10-21 13:09:32,318 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:09:49,268 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:09:49,269 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.ended_at IS NULL
+2026-10-21 13:09:49,269 INFO sqlalchemy.engine.Engine [generated in 0.00028s] ()
+2026-10-21 13:09:49,271 INFO sqlalchemy.engine.Engine INSERT INTO activity_session (name, activity_type, started_at, ended_at, notes, ease_rating) VALUES (?, ?, ?, ?, ?, ?)
+2026-10-21 13:09:49,272 INFO sqlalchemy.engine.Engine [generated in 0.00027s] ('test 2', 'meal', '2026-10-21 11:09:49.267985', None, '', None)
+2026-10-21 13:09:49,274 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 13:09:49,280 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:09:49,282 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 13:09:49,283 INFO sqlalchemy.engine.Engine [generated in 0.00042s] (13,)
+2026-10-21 13:09:49,284 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:09:49,288 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:09:49,288 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 13:09:49,288 INFO sqlalchemy.engine.Engine [cached since 16.98s ago] ()
+2026-10-21 13:09:49,290 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:10:04,687 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:10:04,691 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 13:10:04,691 INFO sqlalchemy.engine.Engine [generated in 0.00034s] ()
+2026-10-21 13:10:04,695 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:10:07,907 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:10:07,909 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 13:10:07,909 INFO sqlalchemy.engine.Engine [generated in 0.00027s] ('13',)
+2026-10-21 13:10:07,910 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 13:10:07,911 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:10:07,911 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 13:10:07,911 INFO sqlalchemy.engine.Engine [generated in 0.00013s] (13,)
+2026-10-21 13:10:07,913 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:10:07,915 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:10:07,918 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.ended_at IS NULL
+2026-10-21 13:10:07,918 INFO sqlalchemy.engine.Engine [generated in 0.00040s] ()
+2026-10-21 13:10:07,920 INFO sqlalchemy.engine.Engine UPDATE activity_session SET ended_at=? WHERE activity_session.id = ?
+2026-10-21 13:10:07,920 INFO sqlalchemy.engine.Engine [generated in 0.00021s] ('2026-10-21 11:10:07.919511', 13)
+2026-10-21 13:10:07,926 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 13:10:07,931 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:10:07,932 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 13:10:07,932 INFO sqlalchemy.engine.Engine [cached since 0.02035s ago] (13,)
+2026-10-21 13:10:07,934 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:10:07,937 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:10:07,938 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 13:10:07,938 INFO sqlalchemy.engine.Engine [cached since 3.247s ago] ()
+2026-10-21 13:10:07,939 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:19:24,854 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:19:24,861 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 13:19:24,861 INFO sqlalchemy.engine.Engine [generated in 0.00039s] ()
+2026-10-21 13:19:24,865 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:27:40,743 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:27:40,748 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 13:27:40,749 INFO sqlalchemy.engine.Engine [generated in 0.00044s] ()
+2026-10-21 13:27:40,752 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:29:47,894 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:29:47,901 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 13:29:47,901 INFO sqlalchemy.engine.Engine [generated in 0.00038s] ()
+2026-10-21 13:29:47,905 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:35:34,118 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:35:34,122 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 13:35:34,123 INFO sqlalchemy.engine.Engine [generated in 0.00040s] ()
+2026-10-21 13:35:34,128 INFO sqlalchemy.engine.Engine ROLLBACK
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\applications.py", line 1216, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\applications.py", line 96, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\telemetry\_asgi.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\routing.py", line 676, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 2809, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 1328, in handle
+    await super().handle(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\routing.py", line 282, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 166, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 152, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 511, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 702, in solve_dependencies
+    ) = await request_body_to_args(  # body_params checked above
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 977, in request_body_to_args
+    v_, errors_ = _validate_value_with_model_field(
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        field=first_field, value=body_to_process, values=values, loc=loc
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 742, in _validate_value_with_model_field
+    return field.validate(value, values, loc=loc)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\_compat\v2.py", line 182, in validate
+    self._type_adapter.validate_python(value, from_attributes=True),
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\pydantic\type_adapter.py", line 410, in validate_python
+    return self.validator.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        object,
+        ^^^^^^^
+    ...<6 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\app\schemas.py", line 32, in validate_ease_rating
+    and self.self.activity_type not in EASE_RATING_ACTIVITY_TYPES
+        ^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\pydantic\main.py", line 1105, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'ActivitySessionInput' object has no attribute 'self'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\applications.py", line 1216, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\applications.py", line 96, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\telemetry\_asgi.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\routing.py", line 676, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 2809, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 1328, in handle
+    await super().handle(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\routing.py", line 282, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 166, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 152, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 511, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 702, in solve_dependencies
+    ) = await request_body_to_args(  # body_params checked above
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 977, in request_body_to_args
+    v_, errors_ = _validate_value_with_model_field(
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        field=first_field, value=body_to_process, values=values, loc=loc
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 742, in _validate_value_with_model_field
+    return field.validate(value, values, loc=loc)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\_compat\v2.py", line 182, in validate
+    self._type_adapter.validate_python(value, from_attributes=True),
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\pydantic\type_adapter.py", line 410, in validate_python
+    return self.validator.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        object,
+        ^^^^^^^
+    ...<6 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\app\schemas.py", line 32, in validate_ease_rating
+    and self.self.activity_type not in EASE_RATING_ACTIVITY_TYPES
+        ^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\pydantic\main.py", line 1105, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'ActivitySessionInput' object has no attribute 'self'
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\applications.py", line 1216, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\applications.py", line 96, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\telemetry\_asgi.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\routing.py", line 676, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 2809, in app
+    await route.handle(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 1328, in handle
+    await super().handle(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\routing.py", line 282, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 166, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 152, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\routing.py", line 511, in app
+    solved_result = await solve_dependencies(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<6 lines>...
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 702, in solve_dependencies
+    ) = await request_body_to_args(  # body_params checked above
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 977, in request_body_to_args
+    v_, errors_ = _validate_value_with_model_field(
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        field=first_field, value=body_to_process, values=values, loc=loc
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\dependencies\utils.py", line 742, in _validate_value_with_model_field
+    return field.validate(value, values, loc=loc)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\fastapi\_compat\v2.py", line 182, in validate
+    self._type_adapter.validate_python(value, from_attributes=True),
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\pydantic\type_adapter.py", line 410, in validate_python
+    return self.validator.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        object,
+        ^^^^^^^
+    ...<6 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\petol\source\python\personal-activity-tracker\app\schemas.py", line 32, in validate_ease_rating
+    and self.self.activity_type not in EASE_RATING_ACTIVITY_TYPES
+        ^^^^^^^^^
+  File "C:\Users\petol\source\python\personal-activity-tracker\.venv\Lib\site-packages\pydantic\main.py", line 1105, in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+AttributeError: 'ActivitySessionInput' object has no attribute 'self'
+2026-10-21 13:47:15,725 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:47:15,732 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 13:47:15,732 INFO sqlalchemy.engine.Engine [generated in 0.00045s] ()
+2026-10-21 13:47:15,736 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:47:23,239 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:47:23,240 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.ended_at IS NULL
+2026-10-21 13:47:23,240 INFO sqlalchemy.engine.Engine [generated in 0.00037s] ()
+2026-10-21 13:47:23,242 INFO sqlalchemy.engine.Engine INSERT INTO activity_session (name, activity_type, started_at, ended_at, notes, ease_rating) VALUES (?, ?, ?, ?, ?, ?)
+2026-10-21 13:47:23,242 INFO sqlalchemy.engine.Engine [generated in 0.00022s] ('test 2', 'work', '2026-10-21 11:47:23.239136', None, '', 4)
+2026-10-21 13:47:23,248 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 13:47:23,255 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:47:23,256 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 13:47:23,256 INFO sqlalchemy.engine.Engine [generated in 0.00022s] (14,)
+2026-10-21 13:47:23,258 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:47:23,261 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:47:23,262 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 13:47:23,262 INFO sqlalchemy.engine.Engine [cached since 7.53s ago] ()
+2026-10-21 13:47:23,263 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:47:49,485 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:47:49,486 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 13:47:49,487 INFO sqlalchemy.engine.Engine [generated in 0.00037s] ('14',)
+2026-10-21 13:47:49,488 INFO sqlalchemy.engine.Engine UPDATE activity_session SET ease_rating=? WHERE activity_session.id = ?
+2026-10-21 13:47:49,488 INFO sqlalchemy.engine.Engine [generated in 0.00019s] (3, 14)
+2026-10-21 13:47:49,494 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 13:47:49,500 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:47:49,500 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 13:47:49,500 INFO sqlalchemy.engine.Engine [cached since 26.24s ago] (14,)
+2026-10-21 13:47:49,502 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:47:49,505 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:47:49,505 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 13:47:49,505 INFO sqlalchemy.engine.Engine [cached since 33.77s ago] ()
+2026-10-21 13:47:49,507 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 13:48:04,283 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 13:48:04,289 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 13:48:04,289 INFO sqlalchemy.engine.Engine [generated in 0.00038s] ()
+2026-10-21 13:48:04,295 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 14:04:36,706 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:04:36,712 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 14:04:36,712 INFO sqlalchemy.engine.Engine [generated in 0.00071s] ()
+2026-10-21 14:04:36,716 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 14:07:05,799 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:07:05,802 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 14:07:05,804 INFO sqlalchemy.engine.Engine [generated in 0.00206s] ('14',)
+2026-10-21 14:07:05,807 INFO sqlalchemy.engine.Engine UPDATE activity_session SET name=? WHERE activity_session.id = ?
+2026-10-21 14:07:05,807 INFO sqlalchemy.engine.Engine [generated in 0.00034s] ('ttttttreewwddfghyufdasertyujgh', 14)
+2026-10-21 14:07:05,812 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 14:07:05,822 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:07:05,824 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 14:07:05,824 INFO sqlalchemy.engine.Engine [generated in 0.00034s] (14,)
+2026-10-21 14:07:05,826 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 14:07:05,832 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:07:05,833 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 14:07:05,833 INFO sqlalchemy.engine.Engine [cached since 149.1s ago] ()
+2026-10-21 14:07:05,835 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 14:07:14,762 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:07:14,763 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 14:07:14,763 INFO sqlalchemy.engine.Engine [cached since 8.961s ago] ('14',)
+2026-10-21 14:07:14,764 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 14:07:14,764 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:07:14,764 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 14:07:14,764 INFO sqlalchemy.engine.Engine [cached since 8.941s ago] (14,)
+2026-10-21 14:07:14,765 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 14:07:14,768 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:07:14,769 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.ended_at IS NULL
+2026-10-21 14:07:14,769 INFO sqlalchemy.engine.Engine [generated in 0.00013s] ()
+2026-10-21 14:07:14,770 INFO sqlalchemy.engine.Engine UPDATE activity_session SET ended_at=? WHERE activity_session.id = ?
+2026-10-21 14:07:14,770 INFO sqlalchemy.engine.Engine [generated in 0.00017s] ('2026-10-21 12:07:14.770212', 14)
+2026-10-21 14:07:14,772 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 14:07:14,778 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:07:14,779 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 14:07:14,780 INFO sqlalchemy.engine.Engine [cached since 8.956s ago] (14,)
+2026-10-21 14:07:14,783 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 14:07:14,788 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:07:14,788 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 14:07:14,788 INFO sqlalchemy.engine.Engine [cached since 158.1s ago] ()
+2026-10-21 14:07:14,789 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 14:09:52,732 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:09:52,739 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 14:09:52,739 INFO sqlalchemy.engine.Engine [generated in 0.00041s] ()
+2026-10-21 14:09:52,743 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 14:13:24,330 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:13:24,336 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 14:13:24,336 INFO sqlalchemy.engine.Engine [generated in 0.00038s] ()
+2026-10-21 14:13:24,340 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 14:14:41,796 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:14:41,801 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 14:14:41,802 INFO sqlalchemy.engine.Engine [generated in 0.00044s] ()
+2026-10-21 14:14:41,806 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 14:15:42,851 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:15:42,856 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 14:15:42,856 INFO sqlalchemy.engine.Engine [generated in 0.00037s] ()
+2026-10-21 14:15:42,860 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 14:15:57,527 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 14:15:57,529 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 14:15:57,529 INFO sqlalchemy.engine.Engine [cached since 14.67s ago] ()
+2026-10-21 14:15:57,531 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 19:13:16,573 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:16,577 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 19:13:16,578 INFO sqlalchemy.engine.Engine [generated in 0.00051s] ()
+2026-10-21 19:13:16,581 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 19:13:19,683 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:19,685 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 19:13:19,686 INFO sqlalchemy.engine.Engine [cached since 3.108s ago] ()
+2026-10-21 19:13:19,691 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 19:13:23,215 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:23,215 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 19:13:23,215 INFO sqlalchemy.engine.Engine [cached since 6.638s ago] ()
+2026-10-21 19:13:23,219 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 19:13:37,607 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:37,608 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.ended_at IS NULL
+2026-10-21 19:13:37,608 INFO sqlalchemy.engine.Engine [generated in 0.00022s] ()
+2026-10-21 19:13:37,610 INFO sqlalchemy.engine.Engine INSERT INTO activity_session (name, activity_type, started_at, ended_at, notes, ease_rating) VALUES (?, ?, ?, ?, ?, ?)
+2026-10-21 19:13:37,610 INFO sqlalchemy.engine.Engine [generated in 0.00023s] ('test', 'work', '2026-10-21 17:13:37.607094', None, '', 1)
+2026-10-21 19:13:37,617 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 19:13:37,622 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:37,624 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 19:13:37,624 INFO sqlalchemy.engine.Engine [generated in 0.00023s] (15,)
+2026-10-21 19:13:37,626 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 19:13:37,630 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:37,630 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 19:13:37,630 INFO sqlalchemy.engine.Engine [cached since 21.05s ago] ()
+2026-10-21 19:13:37,633 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 19:13:47,144 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:47,145 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 19:13:47,146 INFO sqlalchemy.engine.Engine [generated in 0.00033s] ('15',)
+2026-10-21 19:13:47,147 INFO sqlalchemy.engine.Engine UPDATE activity_session SET activity_type=?, ease_rating=? WHERE activity_session.id = ?
+2026-10-21 19:13:47,147 INFO sqlalchemy.engine.Engine [generated in 0.00015s] ('exercise', None, 15)
+2026-10-21 19:13:47,152 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 19:13:47,160 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:47,160 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 19:13:47,160 INFO sqlalchemy.engine.Engine [cached since 9.537s ago] (15,)
+2026-10-21 19:13:47,161 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 19:13:47,164 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:47,165 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 19:13:47,165 INFO sqlalchemy.engine.Engine [cached since 30.59s ago] ()
+2026-10-21 19:13:47,167 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 19:13:52,330 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:52,331 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 19:13:52,331 INFO sqlalchemy.engine.Engine [cached since 5.185s ago] ('15',)
+2026-10-21 19:13:52,332 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 19:13:52,333 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:52,333 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 19:13:52,333 INFO sqlalchemy.engine.Engine [cached since 14.71s ago] (15,)
+2026-10-21 19:13:52,334 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 19:13:52,337 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:52,338 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.ended_at IS NULL
+2026-10-21 19:13:52,338 INFO sqlalchemy.engine.Engine [cached since 14.73s ago] ()
+2026-10-21 19:13:52,339 INFO sqlalchemy.engine.Engine UPDATE activity_session SET ended_at=? WHERE activity_session.id = ?
+2026-10-21 19:13:52,339 INFO sqlalchemy.engine.Engine [generated in 0.00018s] ('2026-10-21 17:13:52.338612', 15)
+2026-10-21 19:13:52,344 INFO sqlalchemy.engine.Engine COMMIT
+2026-10-21 19:13:52,350 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:52,350 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.id = ?
+2026-10-21 19:13:52,351 INFO sqlalchemy.engine.Engine [cached since 14.73s ago] (15,)
+2026-10-21 19:13:52,353 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 19:13:52,355 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 19:13:52,356 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 19:13:52,356 INFO sqlalchemy.engine.Engine [cached since 35.78s ago] ()
+2026-10-21 19:13:52,357 INFO sqlalchemy.engine.Engine ROLLBACK
