@@ -7,8 +7,8 @@ from tests.api_paths import ACTIVITIES_URL
 
 def test_get_activities_by_day(client, test_engine):
     # PREPARE DATA
-    with Session(test_engine) as session:
-        session.add_all([
+    with Session(test_engine) as db:
+        db.add_all([
             Activity(
                 name="Previous day",
                 activity_type="work",
@@ -28,7 +28,7 @@ def test_get_activities_by_day(client, test_engine):
                 ended_at=datetime(2026, 10, 22, 13, 0)
             ),
         ])
-        session.commit()
+        db.commit()
 
     response = client.get(f"{ACTIVITIES_URL}?day=2026-10-21")
 
@@ -42,8 +42,8 @@ def test_get_activities_by_day(client, test_engine):
 
 def test_day_lower_boundary(client, test_engine):
     # PREPARE DATA
-    with Session(test_engine) as session:
-        session.add_all([
+    with Session(test_engine) as db:
+        db.add_all([
             Activity(
                 name="Previous day",
                 activity_type="work",
@@ -63,7 +63,7 @@ def test_day_lower_boundary(client, test_engine):
                 ended_at=datetime(2026, 10, 21, 4, 0)
             ),
         ])
-        session.commit()
+        db.commit()
 
     response = client.get(f"{ACTIVITIES_URL}?day=2026-10-21")
 
@@ -77,8 +77,8 @@ def test_day_lower_boundary(client, test_engine):
 
 def test_day_upper_boundary(client, test_engine):
     # PREPARE DATA
-    with Session(test_engine) as session:
-        session.add_all([
+    with Session(test_engine) as db:
+        db.add_all([
             Activity(
                 name="Current day",
                 activity_type="work",
@@ -98,7 +98,7 @@ def test_day_upper_boundary(client, test_engine):
                 ended_at=datetime(2026, 10, 22, 4, 0)
             ),
         ])
-        session.commit()
+        db.commit()
 
     response = client.get(f"{ACTIVITIES_URL}?day=2026-10-21")
 

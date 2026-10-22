@@ -1,88 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Activity Tracker</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/ui-additions.css">
 </head>
-
 <body>
-
     <h1>Activity Tracker</h1>
 
     <!-- HISTORY -->
-
     <section>
         <div class="section-header">
             <h2>Activity History</h2>
         </div>
-
         <ul id="activities"></ul>
     </section>
 
-
-    <!-- ACTIVITY FORM -->
-
-    <section>
-
-        <div class="section-header">
-            <h2 id="activityHeading">New Activity</h2>
-            <span id="timer">00:00:00</span>
+    <!-- ACTIVITY FORM: the tabs are visually attached to this panel -->
+    <section class="activity-section">
+        <div class="form-tabs" role="group" aria-label="Activity mode">
+            <button id="currentTab" class="mode-tab" type="button" aria-pressed="true">
+                Current activity
+            </button>
+            <button id="addPastTab" class="mode-tab" type="button" aria-pressed="false">
+                Past activity
+            </button>
         </div>
 
-        <div class="form-row field">
-            <div>
-                <label for="activityName">Name</label>
-                <input
-                    id="activityName"
-                    type="text"
-                    maxlength="30"
-                    placeholder="Activity name"
-                >
+        <div class="activity-panel">
+            <div class="section-header">
+                <h2 id="activityHeading">New Activity</h2>
+                <span id="timer">00:00:00</span>
             </div>
 
-            <div>
-                <label for="activityType">Type</label>
-                <select id="activityType"></select>
+            <div class="form-row field">
+                <div>
+                    <label for="activityName">Name</label>
+                    <input id="activityName" type="text" maxlength="30" placeholder="Activity name">
+                </div>
+                <div>
+                    <label for="activityType">Type</label>
+                    <select id="activityType"></select>
+                </div>
             </div>
+
+            <div id="timeFields" class="form-row field" hidden>
+                <div>
+                    <label for="startedAt">Start time</label>
+                    <div class="datetime-control">
+                        <span class="datetime-display" id="startedAtDisplay" aria-hidden="true">dd.mm.yyyy --:--</span>
+                        <svg class="calendar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M7 3v5M17 3v5M3 10h18" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                    </svg>
+                        <input id="startedAt" type="datetime-local" lang="sk-SK" step="60" aria-label="Select start date and time">
+                    </div>
+                </div>
+                <div>
+                    <label for="endedAt">End time</label>
+                    <div class="datetime-control">
+                        <span class="datetime-display" id="endedAtDisplay" aria-hidden="true">dd.mm.yyyy --:--</span>
+                        <svg class="calendar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M7 3v5M17 3v5M3 10h18" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                    </svg>
+                        <input id="endedAt" type="datetime-local" lang="sk-SK" step="60" aria-label="Select end date and time">
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="activityNotes">Notes</label>
+                <textarea id="activityNotes" rows="3" placeholder="Optional notes..."></textarea>
+            </div>
+
+            <div class="field" id="ratingField" hidden>
+                <label for="easeRating">Ease of work</label>
+                <select id="easeRating"></select>
+            </div>
+
+            <div class="actions">
+                <button id="startButton" type="button">Start Activity</button>
+                <button id="saveButton" type="button" hidden>Save</button>
+                <button id="stopButton" type="button" hidden>Stop</button>
+                <button id="deleteButton" type="button" hidden>Delete</button>
+                <button id="cancelButton" type="button" hidden>Cancel</button>
+                <span id="saveStatus" role="status" aria-live="polite"></span>
+            </div>
+            <i>Ctrl + win + t</i>
         </div>
-
-        <div class="field">
-            <label for="activityNotes">Notes</label>
-            <textarea
-                id="activityNotes"
-                rows="3"
-                placeholder="Optional notes..."
-            ></textarea>
-        </div>
-
-        <div class="field" id="ratingField" hidden>
-            <label for="easeRating">Ease of work</label>
-            <select id="easeRating"></select>
-        </div>
-
-        <div class="actions">
-
-            <button id="startButton" type="button">
-                Start Activity
-            </button>
-
-            <button id="saveButton" type="button" hidden>
-                Save
-            </button>
-
-            <button id="stopButton" type="button" hidden>
-                Stop
-            </button>
-
-            <span id="saveStatus" role="status" aria-live="polite"></span>
-
-        </div>
-        <i>Ctrl + win + t</i>
     </section>
-    <script src="/static/app.js" defer></script>
 
+    <script src="/static/app.js" defer></script>
 </body>
 </html>

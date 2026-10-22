@@ -1,0 +1,137 @@
+/* Classic attached folder tabs: selected tab and form panel are one surface. */
+.activity-section {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+}
+
+.form-tabs {
+    display: flex;
+    gap: 4px;
+    align-items: flex-end;
+    padding-left: 7px;
+    margin-bottom: -1px;
+    position: relative;
+    z-index: 1;
+}
+
+.form-tabs .mode-tab {
+    appearance: none;
+    flex: 0 1 auto;
+    padding: 10px 15px 9px;
+    margin: 0;
+    font: inherit;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.2;
+    white-space: nowrap;
+    color: #586476;
+    background: #e9edf3;
+    border: 1px solid #c6cdd8;
+    border-bottom: 1px solid #c6cdd8;
+    border-radius: 9px 9px 0 0;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.form-tabs .mode-tab:hover:not([aria-pressed="true"]) {
+    background: #dce6f4;
+    color: #304766;
+}
+
+.form-tabs .mode-tab[aria-pressed="true"] {
+    background: #fff;
+    color: #1958ac;
+    border-color: #c6cdd8;
+    border-bottom-color: #fff;
+    font-weight: 700;
+    box-shadow: inset 0 3px 0 #3779d1;
+}
+
+.form-tabs .mode-tab:focus-visible {
+    outline: 2px solid #3779d1;
+    outline-offset: 2px;
+}
+
+.activity-panel {
+    padding: 12px;
+    border: 1px solid #c6cdd8;
+    background: #fff;
+    border-radius: 8px;
+    min-width: 0;
+}
+
+/* Compact native date-time pickers, with the browser's calendar icon. */
+#timeFields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    max-width: 340px;
+}
+
+#timeFields > div { min-width: 0; }
+
+#timeFields input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding: 7px 4px;
+    font-size: 11px;
+}
+
+/* Keep the native browser picker while displaying a consistent compact
+   dd.mm.yyyy HH:mm value (the browser controls native input formatting). */
+.datetime-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    height: 33px;
+    padding: 0 7px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+}
+
+.datetime-display {
+    font: inherit;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: #222;
+    pointer-events: none;
+}
+
+.datetime-control .calendar-icon {
+    width: 15px;
+    height: 15px;
+    margin-left: auto;
+    flex-shrink: 0;
+    color: #555;
+    pointer-events: none;
+}
+
+/* The real datetime-local control captures clicks and opens its native picker. */
+#timeFields .datetime-control input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.datetime-control:focus-within {
+    outline: 2px solid #3779d1;
+    outline-offset: 1px;
+}
+
+/* A more obvious affordance for clickable history items. */
+#activities li[role="button"] { cursor: pointer; }
+#activities li[role="button"]:hover { background: #f2f6fc; }
+
+/* Never show fields hidden by the current form mode. */
+.activity-section [hidden] { display: none !important; }

@@ -26,7 +26,7 @@ def test_stop_without_active_activity(client):
     assert response.status_code == 409
     assert response.json() == {"detail": "No active activity"}
 
-def test_start_session(client):
+def test_start_activity(client):
     response = client.post(
         f"{ACTIVITIES_URL}/start", 
         json={"name": "Python", "activity_type": "work"}
@@ -104,12 +104,12 @@ def test_start_invalid_name(client):
     assert response.status_code == 422
 
     get_response = client.get(f"{ACTIVITIES_URL}")
-    sessions = get_response.json()
+    activities = get_response.json()
 
     assert get_response.status_code == 200
-    assert len(sessions) == 0
+    assert len(activities) == 0
 
-def test_only_one_running_session_allowed(tmp_path):
+def test_only_one_running_activity_allowed(tmp_path):
     # Create an isolated test database
     test_db = tmp_path / "constraint.db"
     test_engine = create_engine(f"sqlite:///{test_db.as_posix()}")
@@ -117,7 +117,7 @@ def test_only_one_running_session_allowed(tmp_path):
     # Create tables and indexes
     Base.metadata.create_all(test_engine)
 
-    with Session(test_engine) as session:
+    with Session(test_engine) as db:
         # First running activity
         first = Activity(
             name="Python",
@@ -125,8 +125,8 @@ def test_only_one_running_session_allowed(tmp_path):
             started_at=datetime.now(timezone.utc)
         )
 
-        session.add(first)
-        session.commit()
+        db.add(first)
+        db.commit()
 
         # Second running activity
         second = Activity(
@@ -135,35 +135,35 @@ def test_only_one_running_session_allowed(tmp_path):
             started_at=datetime.now(timezone.utc)
         )
 
-        session.add(second)
+        db.add(second)
 
         # Database should reject the second activity
         with pytest.raises(IntegrityError, match="uq_one_running_activity"):
-            session.commit()
+            db.commit()
 
-        session.rollback()
+        db.rollback()
 
     test_engine.dispose()
 
-    def test_update_session(client):
-        response = client.post(
-            f"{ACTIVITIES_URL}/start", json={"name": "python", "activity_type": "work"})
-        assert response.status_code == 201
+def test_update_activity(client):
+    response = client.post(
+        f"{ACTIVITIES_URL}/start", json={"name": "python", "activity_type": "work"})
+    assert response.status_code == 201
 
-        original = response.json()
+    original = response.json()
 
-        update_response = client.put(
-            f"{ACTIVITIES_URL}/{response.json()["id"]}", 
-            json={"name": "python88", "activity_type": "work", "notes": "some notes"})
+    update_response = client.put(
+        f"{ACTIVITIES_URL}/{response.json()["id"]}", 
+        json={"name": "python88", "activity_type": "meal", "notes": "some notes"})
 
-        assert update_response.status_code == 200
+    assert update_response.status_code == 200
 
-        updated = update_response.json()
+    updated = update_response.json()
 
-        assert updated["id"] == original["id"]
-        assert updated["started_at"] == original["started_at"]
-        assert updated["ended_at"] is None
+    assert updated["id"] == original["id"]
+    assert updated["started_at"] == original["started_at"]
+    assert updated["ended_at"] is None
 
-        assert updated["name"] == "python88"
-        assert updated["activity_type"] == "meal"
-        assert updated["notes"] == "some notes"
+    assert updated["name"] == "python88"
+    assert updated["activity_type"] == "meal"
+    assert updated["notes"] == "some notes"

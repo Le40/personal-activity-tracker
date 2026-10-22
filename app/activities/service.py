@@ -1,11 +1,15 @@
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from datetime import date, datetime, time, timezone, timedelta
 from zoneinfo import ZoneInfo
 
-from app.activities.schemas import ActivityInput
+from app.activities import schemas
 from app.activities.models import Activity
+
+
+class ActivityConflictError(Exception):
+    pass
 
 def get_activities(
         db: Session, day: date | None = None
@@ -37,7 +41,7 @@ def get_activity_by_id(
 
 
 def start_activity(
-    db: Session, request: ActivityInput
+    db: Session, request: schemas.ActivityInput
 ) -> Activity:
 
     current_datetime = datetime.now(timezone.utc)
@@ -79,18 +83,91 @@ def stop_activity(
     return current_activity
 
 def update_activity(
-    db: Session, activity_id: int, request: ActivityInput
+    db: Session, activity_id: int, request: schemas.ActivityUpdate
 ) -> Activity | None:
 
     activity = db.get(Activity, activity_id)
     
     if activity is None:
         return None
+
+    if request.started_at is not None:
+        # Running acitivity
+        if activity.ended_at is None:
+            raise ActivityConflictError(
+                "Cannot change timestamps of a running activity"
+            )
+        # Covert schema timestamps to UTC
+        started_at = request.started_at.astimezone(timezone.utc).replace(tzinfo=None)
+        ended_at = request.ended_at.astimezone(timezone.utc).replace(tzinfo=None)
+
+        if has_activity_overlap(db, started_at, ended_at, activity_id):
+            raise ActivityConflictError("Activity overlaps existing one")
+
+        activity.started_at = started_at
+        activity.ended_at = ended_at
+
+    data = request.model_dump(
+        mode="json",
+        exclude={"started_at", "ended_at"}
+    )
     
-    for field, value in request.model_dump(mode="json").items():
+    for field, value in data.items():
         setattr(activity, field, value)
     
     db.commit()
     db.refresh(activity)
     return activity
+
+def add_completed_activity(
+    db: Session, request: schemas.CompletedActivityInput
+) -> Activity | None:
+
+    data = request.model_dump()
+
+    data["started_at"] = data["started_at"].astimezone(timezone.utc).replace(tzinfo=None)
+    data["ended_at"] = data["ended_at"].astimezone(timezone.utc).replace(tzinfo=None)
     
+    activity = Activity(**data)
+
+    if has_activity_overlap(db, activity.started_at, activity.ended_at):
+        raise ActivityConflictError("Activity overlaps existing one")
+
+    db.add(activity)
+    db.commit()
+    db.refresh(activity)
+
+    return activity
+
+def has_activity_overlap(
+    db: Session,
+    started_at: datetime,
+    ended_at: datetime,
+    exclude_activity_id: int | None = None
+) -> bool:
+    
+    statement = select(Activity.id).where(
+        Activity.started_at < ended_at,
+        or_(
+            Activity.ended_at > started_at,
+            Activity.ended_at.is_(None)
+        )
+    )
+
+    if exclude_activity_id is not None:
+        statement = statement.where(Activity.id != exclude_activity_id)
+
+    return db.scalar(select(statement.exists()))
+
+def delete_activity(
+    db: Session, activity_id: int
+) -> bool:
+
+    activity = db.get(Activity, activity_id)
+    
+    if activity is None:
+        return False
+
+    db.delete(activity)
+    db.commit()
+    return True
