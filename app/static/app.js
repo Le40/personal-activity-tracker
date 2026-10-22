@@ -1,3 +1,8 @@
+
+const ACTIVITIES_URL = "/activities";
+const AUTOSAVE_DELAY_MS = 5000;
+const REPORTING_DAY_START_HOUR = 5;
+
 let activeActivity = null;
 let busy = false;
 let autosaveTimer = null;
@@ -72,7 +77,7 @@ function markUnsaved() {
     autosaveTimer = setTimeout(() => {
         autosaveTimer = null;
         runAction(saveCurrentActivity);
-    }, 5000);
+    }, AUTOSAVE_DELAY_MS);
 }
 
 document.getElementById("activityName")
@@ -203,7 +208,7 @@ function getReportingDay() {
     const date = new Date();
 
     // Before 05:00, we're still in the previous reporting day.
-    if (date.getHours() < 5) {
+    if (date.getHours() < REPORTING_DAY_START_HOUR) {
         date.setDate(date.getDate() - 1);
     }
 
@@ -217,26 +222,26 @@ function getReportingDay() {
 
 // LOAD ACTIVITIES
 
-async function loadSessions() {
-    const sessions = await apiRequest("/sessions");
+async function loadActivities() {
+    const activities = await apiRequest(ACTIVITIES_URL);
 
     const reportingDay = getReportingDay();
-    const historySessions = await apiRequest(`/sessions?day=${reportingDay}`);
+    const historyActivities = await apiRequest(`${ACTIVITIES_URL}?day=${reportingDay}`);
 
-    activeActivity = sessions.find(
+    activeActivity = activities.find(
         activity => activity.ended_at === null
     ) ?? null;
 
     displayActivityForm();
 
-    const completed = historySessions
+    const completed = historyActivities
         .filter(activity => activity.ended_at !== null)
         .sort((a, b) =>
             parseTimestamp(a.started_at) -
             parseTimestamp(b.started_at)
         );
 
-    const list = document.getElementById("sessions");
+    const list = document.getElementById("activities");
     list.replaceChildren();
 
     for (const activity of completed) {
@@ -301,7 +306,7 @@ async function saveCurrentActivity() {
     setSaveStatus("Saving...");
 
     try {
-        await apiRequest(`/sessions/${activeActivity.id}`, {
+        await apiRequest(`${ACTIVITIES_URL}/${activeActivity.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -335,7 +340,7 @@ async function runAction(action) {
 
     try {
         await action();
-        await loadSessions();
+        await loadActivities();
     } catch (error) {
         setSaveStatus(error.message, "error");
     } finally {
@@ -350,8 +355,8 @@ async function runAction(action) {
 document.getElementById("startButton").addEventListener("click", () => {
     runAction(async () => {
         const data = readActivityForm();
-
-        await apiRequest("/sessions/start", {
+   
+        await apiRequest(`${ACTIVITIES_URL}/start`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -377,7 +382,7 @@ document.getElementById("stopButton").addEventListener("click", () => {
     runAction(async () => {
         await saveCurrentActivity();
 
-        await apiRequest("/sessions/stop", {
+        await apiRequest(`${ACTIVITIES_URL}/stop`, {
             method: "POST"
         });
     });
@@ -388,7 +393,7 @@ document.getElementById("stopButton").addEventListener("click", () => {
 
 async function initialize() {
     await loadOptions();
-    await loadSessions();
+    await loadActivities();
 }
 
 initialize().catch(error => {

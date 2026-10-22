@@ -1,32 +1,27 @@
-import pytest
-
-from datetime import datetime, timezone
-from sqlalchemy import create_engine
+from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 
-from app.models import Base, ActivitySession
-
-
+from app.models import Activity
+from tests.api_paths import ACTIVITIES_URL
 
 
-def test_get_sessions_by_day(client, test_engine):
+def test_get_activities_by_day(client, test_engine):
     # PREPARE DATA
     with Session(test_engine) as session:
         session.add_all([
-            ActivitySession(
+            Activity(
                 name="Previous day",
                 activity_type="work",
                 started_at=datetime(2026, 10, 20, 12, 0),
                 ended_at=datetime(2026, 10, 20, 13, 0)
             ),
-            ActivitySession(
+            Activity(
                 name="Requested day",
                 activity_type="work",
                 started_at=datetime(2026, 10, 21, 12, 0),
                 ended_at=datetime(2026, 10, 21, 13, 0)
             ),
-            ActivitySession(
+            Activity(
                 name="Following day",
                 activity_type="work",
                 started_at=datetime(2026, 10, 22, 12, 0),
@@ -35,7 +30,7 @@ def test_get_sessions_by_day(client, test_engine):
         ])
         session.commit()
 
-    response = client.get("/sessions?day=2026-10-21")
+    response = client.get(f"{ACTIVITIES_URL}?day=2026-10-21")
 
     assert response.status_code == 200
 
@@ -49,19 +44,19 @@ def test_day_lower_boundary(client, test_engine):
     # PREPARE DATA
     with Session(test_engine) as session:
         session.add_all([
-            ActivitySession(
+            Activity(
                 name="Previous day",
                 activity_type="work",
                 started_at=datetime(2026, 10, 21, 2, 0),
                 ended_at=datetime(2026, 10, 21, 3, 0)
             ),
-            ActivitySession(
+            Activity(
                 name="Crossing boundary",
                 activity_type="work",
                 started_at=datetime(2026, 10, 21, 2, 30),
                 ended_at=datetime(2026, 10, 21, 3, 1)
             ),
-            ActivitySession(
+            Activity(
                 name="Current day",
                 activity_type="work",
                 started_at=datetime(2026, 10, 21, 3, 0),
@@ -70,7 +65,7 @@ def test_day_lower_boundary(client, test_engine):
         ])
         session.commit()
 
-    response = client.get("/sessions?day=2026-10-21")
+    response = client.get(f"{ACTIVITIES_URL}?day=2026-10-21")
 
     assert response.status_code == 200
 
@@ -84,19 +79,19 @@ def test_day_upper_boundary(client, test_engine):
     # PREPARE DATA
     with Session(test_engine) as session:
         session.add_all([
-            ActivitySession(
+            Activity(
                 name="Current day",
                 activity_type="work",
                 started_at=datetime(2026, 10, 22, 2, 0),
                 ended_at=datetime(2026, 10, 22, 3, 0)
             ),
-            ActivitySession(
+            Activity(
                 name="Crossing boundary",
                 activity_type="work",
                 started_at=datetime(2026, 10, 22, 2, 30),
                 ended_at=datetime(2026, 10, 22, 3, 1)
             ),
-            ActivitySession(
+            Activity(
                 name="Next day",
                 activity_type="work",
                 started_at=datetime(2026, 10, 22, 3, 0),
@@ -105,7 +100,7 @@ def test_day_upper_boundary(client, test_engine):
         ])
         session.commit()
 
-    response = client.get("/sessions?day=2026-10-21")
+    response = client.get(f"{ACTIVITIES_URL}?day=2026-10-21")
 
     assert response.status_code == 200
 

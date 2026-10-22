@@ -1,11 +1,12 @@
 import pytest
 
 from app.options import ActivityType, EASE_RATING_ACTIVITY_TYPES
+from tests.api_paths import ACTIVITIES_URL
 
 # TEST EASE RATING AGAINST ACTIVITY TYPES
 @pytest.mark.parametrize("activity_type", ActivityType)
 def test_ease_rating_validation(client, activity_type):
-    response = client.post("/sessions/start", json={
+    response = client.post(f"{ACTIVITIES_URL}/start", json={
         "name": "Test rating",
         "activity_type": activity_type.value,
         "ease_rating": 4
@@ -20,7 +21,7 @@ def test_ease_rating_validation(client, activity_type):
 # TEST EASE RATING AGAINST ACTIVITY TYPES
 @pytest.mark.parametrize("activity_type", ActivityType)
 def test_start_work_without_rating(client, activity_type):
-    response = client.post("/sessions/start", json={
+    response = client.post(f"{ACTIVITIES_URL}/start", json={
         "name": "Test rating",
         "activity_type": activity_type.value,
     })
@@ -37,7 +38,7 @@ def test_start_work_without_rating(client, activity_type):
     (6, 422),
 ])
 def test_rating_outside_boundary(client, activity_type, rating, expected_status):
-    response = client.post("/sessions/start", json={
+    response = client.post(f"{ACTIVITIES_URL}/start", json={
         "name": "Test rating",
         "activity_type": activity_type.value,
         "ease_rating": rating
@@ -48,7 +49,7 @@ def test_rating_outside_boundary(client, activity_type, rating, expected_status)
 # TEST CHANGE IN RATING
 @pytest.mark.parametrize("activity_type", EASE_RATING_ACTIVITY_TYPES)
 def test_ease_rating_change(client, activity_type):
-    start_response = client.post("/sessions/start", json={
+    start_response = client.post(f"{ACTIVITIES_URL}/start", json={
         "name": "Test rating",
         "activity_type": activity_type.value,
         "ease_rating": 4
@@ -56,7 +57,7 @@ def test_ease_rating_change(client, activity_type):
     assert start_response.status_code == 201
     session_id = start_response.json()["id"]
 
-    update_response = client.put(f"/sessions/{session_id}", json={
+    update_response = client.put(f"{ACTIVITIES_URL}/{session_id}", json={
         "name": "Test rating",
         "activity_type": activity_type.value,
         "ease_rating": 2
@@ -64,7 +65,7 @@ def test_ease_rating_change(client, activity_type):
 
     assert update_response.status_code == 200
 
-    get_response = client.get(f"/sessions/{session_id}")
+    get_response = client.get(f"{ACTIVITIES_URL}/{session_id}")
     assert get_response.status_code == 200
 
     get_data = get_response.json()
@@ -80,7 +81,7 @@ def test_ease_rating_change(client, activity_type):
 def test_change_to_unsupported_type_with_rating_is_rejected(
     client, supported_type, unsupported_type
 ):
-    start_response = client.post("/sessions/start", json={
+    start_response = client.post(f"{ACTIVITIES_URL}/start", json={
         "name": "Test rating",
         "activity_type": supported_type.value,
         "ease_rating": 4
@@ -88,7 +89,7 @@ def test_change_to_unsupported_type_with_rating_is_rejected(
     assert start_response.status_code == 201
     session_id = start_response.json()["id"]
 
-    update_response = client.put(f"/sessions/{session_id}", json={
+    update_response = client.put(f"{ACTIVITIES_URL}/{session_id}", json={
         "name": "Test rating",
         "activity_type": unsupported_type.value,
         "ease_rating": 4
@@ -96,7 +97,8 @@ def test_change_to_unsupported_type_with_rating_is_rejected(
 
     assert update_response.status_code == 422
 
-    get_response = client.get(f"/sessions/{session_id}")
+
+    get_response = client.get(f"{ACTIVITIES_URL}/{session_id}")
     assert get_response.status_code == 200
 
     get_data = get_response.json()

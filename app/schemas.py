@@ -6,7 +6,7 @@ from app.options import ActivityType, EaseRating, EASE_RATING_ACTIVITY_TYPES
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class ActivitySessionResponse(BaseModel):
+class ActivityResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -17,7 +17,7 @@ class ActivitySessionResponse(BaseModel):
     notes: str | None
     ease_rating: EaseRating | None
 
-class ActivitySessionInput(BaseModel):
+class ActivityInput(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
     name: str = Field(min_length=1, max_length=30)

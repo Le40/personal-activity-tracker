@@ -734,3 +734,36 @@ FROM activity_session
 WHERE activity_session.ended_at > ? AND activity_session.ended_at <= ?
 2026-10-21 21:08:38,023 INFO sqlalchemy.engine.Engine [cached since 2.84s ago] ('2026-10-21 03:00:00.000000', '2026-10-22 03:00:00.000000')
 2026-10-21 21:08:38,025 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 23:35:18,844 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 23:35:18,848 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-21 23:35:18,849 INFO sqlalchemy.engine.Engine [generated in 0.00040s] ()
+2026-10-21 23:35:18,853 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-21 23:35:18,878 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-21 23:35:18,881 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.ended_at > ? AND activity_session.ended_at <= ?
+2026-10-21 23:35:18,882 INFO sqlalchemy.engine.Engine [generated in 0.00115s] ('2026-10-21 03:00:00.000000', '2026-10-22 03:00:00.000000')
+2026-10-21 23:35:18,885 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-22 10:54:32,493 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-22 10:54:32,499 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session
+2026-10-22 10:54:32,500 INFO sqlalchemy.engine.Engine [generated in 0.00044s] ()
+2026-10-22 10:54:32,512 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-22 10:54:32,773 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-22 10:54:32,775 INFO sqlalchemy.engine.Engine SELECT activity_session.id, activity_session.name, activity_session.activity_type, activity_session.started_at, activity_session.ended_at, activity_session.notes, activity_session.ease_rating 
+FROM activity_session 
+WHERE activity_session.ended_at > ? AND activity_session.ended_at <= ?
+2026-10-22 10:54:32,776 INFO sqlalchemy.engine.Engine [generated in 0.00043s] ('2026-10-22 03:00:00.000000', '2026-10-23 03:00:00.000000')
+2026-10-22 10:54:32,778 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-22 11:15:53,712 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-22 11:15:53,717 INFO sqlalchemy.engine.Engine SELECT activities.id, activities.name, activities.activity_type, activities.started_at, activities.ended_at, activities.notes, activities.ease_rating 
+FROM activities
+2026-10-22 11:15:53,717 INFO sqlalchemy.engine.Engine [generated in 0.00046s] ()
+2026-10-22 11:15:53,720 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-22 11:15:53,803 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-22 11:15:53,804 INFO sqlalchemy.engine.Engine SELECT activities.id, activities.name, activities.activity_type, activities.started_at, activities.ended_at, activities.notes, activities.ease_rating 
+FROM activities 
+WHERE activities.ended_at > ? AND activities.ended_at <= ?
+2026-10-22 11:15:53,804 INFO sqlalchemy.engine.Engine [generated in 0.00032s] ('2026-10-22 03:00:00.000000', '2026-10-23 03:00:00.000000')
+2026-10-22 11:15:53,806 INFO sqlalchemy.engine.Engine ROLLBACK

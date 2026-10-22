@@ -8,8 +8,8 @@ from sqlalchemy import DateTime
 class Base(DeclarativeBase):
     pass
 
-class ActivitySession(Base): 
-    __tablename__ = "activity_session"
+class Activity(Base): 
+    __tablename__ = "activities"
     __table_args__ = (CheckConstraint(
             "ease_rating BETWEEN 1 AND 5",
             name="ck_ease_rating_range"
@@ -27,9 +27,9 @@ class ActivitySession(Base):
     ease_rating: Mapped[int | None] = mapped_column(nullable=True)
 
 
-running_session_index = Index(
-    "uq_one_running_session",
-    ActivitySession.ended_at.is_(None),
+running_activity_index = Index(
+    "uq_one_running_activity",
+    Activity.ended_at.is_(None),
     unique=True,
-    sqlite_where=ActivitySession.ended_at.is_(None),
+    sqlite_where=Activity.ended_at.is_(None),
 )
