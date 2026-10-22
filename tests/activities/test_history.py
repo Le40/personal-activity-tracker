@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import Session
 
-from app.models import Activity
+from app.activities.models import Activity
 from tests.api_paths import ACTIVITIES_URL
 
 

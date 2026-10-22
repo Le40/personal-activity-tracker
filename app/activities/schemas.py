@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Self
 from pydantic import model_validator
-from app.options import ActivityType, EaseRating, EASE_RATING_ACTIVITY_TYPES
+from app.activities.options import ActivityType, EaseRating, EASE_RATING_ACTIVITY_TYPES
 
 from pydantic import BaseModel, ConfigDict, Field
 

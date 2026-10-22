@@ -1,19 +1,16 @@
-from fastapi import APIRouter
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from datetime import date, datetime, time, timezone, timedelta
 from zoneinfo import ZoneInfo
 
-from fastapi import HTTPException, Depends
-from sqlalchemy.orm import Session
-from sqlalchemy import select
-from datetime import date, datetime, time, timezone, timedelta
-from app.database import get_session
-from app.models import Activity
-from app.schemas import ActivityResponse, ActivityInput
+from app.activities.schemas import ActivityInput
+from app.activities.models import Activity
 
+def get_activities(
+        db: Session, day: date | None = None
+) -> list[Activity]:
 
-router = APIRouter(prefix="/activities", tags=["Activities"])
-
-@router.get("", response_model=list[ActivityResponse])
-def get_activities(day: date | None = None, db: Session = Depends(get_session)):
     statement = select(Activity)
 
     if day is not None:
@@ -33,21 +30,16 @@ def get_activities(day: date | None = None, db: Session = Depends(get_session)):
     return db.scalars(statement).all()
 
 
-@router.get("/{activity_id}", response_model=ActivityResponse)
-def get_activity_by_id(activity_id: int, db: Session = Depends(get_session)):
-    activity = db.get(Activity, activity_id)
-
-    if activity is None:
-        raise HTTPException(status_code=404, detail="Session not found")
-
-    return activity
+def get_activity_by_id(
+        db: Session, activity_id: int
+) -> Activity | None:
+    return db.get(Activity, activity_id)
 
 
-@router.post("/start", response_model=ActivityResponse, status_code=201)
 def start_activity(
-    request: ActivityInput,
-    db: Session = Depends(get_session)
-):
+    db: Session, request: ActivityInput
+) -> Activity:
+
     current_datetime = datetime.now(timezone.utc)
 
     old_activity = db.scalars(
@@ -68,39 +60,37 @@ def start_activity(
 
     return new_activity
 
-
-@router.post("/stop",response_model=ActivityResponse)
 def stop_activity(
-    db: Session = Depends(get_session)
-):
+    db: Session
+) -> Activity | None:
 
     current_activity = db.scalars(
         select(Activity).where(Activity.ended_at.is_(None))
     ).first()
-
+    
     if current_activity is None:
-        raise HTTPException(status_code=409,detail="No active activity")
-
+        return None
+    
     current_activity.ended_at = datetime.now(timezone.utc)
-
+    
     db.commit()
     db.refresh(current_activity)
-
+    
     return current_activity
 
+def update_activity(
+    db: Session, activity_id: int, request: ActivityInput
+) -> Activity | None:
 
-@router.put("/{activity_id}")
-def update_session(activity_id, request: ActivityInput,
-    db: Session = Depends(get_session)
-):
     activity = db.get(Activity, activity_id)
-
+    
     if activity is None:
-        raise HTTPException(status_code=404, detail="Activity not found")
-
+        return None
+    
     for field, value in request.model_dump(mode="json").items():
         setattr(activity, field, value)
-
+    
     db.commit()
     db.refresh(activity)
     return activity
+    

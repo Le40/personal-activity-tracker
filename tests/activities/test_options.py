@@ -1,8 +1,9 @@
 
-from app.options import ActivityType, EASE_RATING_ACTIVITY_TYPES, EASE_LABELS
+from app.activities.options import ActivityType, EASE_RATING_ACTIVITY_TYPES, EASE_LABELS
+from tests.api_paths import ACTIVITIES_URL
 
 def test_options(client):
-    response = client.get("/options")
+    response = client.get(f"{ACTIVITIES_URL}/options")
     assert response.status_code == 200
 
     data = response.json()

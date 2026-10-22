@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from app.models import Base, Activity
+from app.activities.models import Base, Activity
 from tests.api_paths import ACTIVITIES_URL
 
 
