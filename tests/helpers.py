@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from zoneinfo import ZoneInfo
 
 TEST_TIMEZONE = ZoneInfo("Europe/Bratislava")
@@ -8,4 +8,4 @@ def local_to_utc(value: str) -> datetime:
         tzinfo=TEST_TIMEZONE
     )
 
-    return local_time.astimezone(timezone.utc).replace(tzinfo=None)
+    return local_time.astimezone(UTC).replace(tzinfo=None)

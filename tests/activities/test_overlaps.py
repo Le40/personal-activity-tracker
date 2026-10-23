@@ -1,6 +1,6 @@
-import pytest
-
 from datetime import datetime
+
+import pytest
 from sqlalchemy.orm import Session
 
 from app.activities.models import Activity

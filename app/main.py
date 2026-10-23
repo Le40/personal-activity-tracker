@@ -1,11 +1,11 @@
 
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from pathlib import Path
 
 from app.activities import router
-
 
 app = FastAPI()
 

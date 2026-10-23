@@ -1,12 +1,21 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Annotated, Self
-from pydantic import AfterValidator, AwareDatetime, field_validator, model_validator
-from app.activities.options import ActivityType, EaseRating, EASE_RATING_ACTIVITY_TYPES
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import (
+    AfterValidator,
+    AwareDatetime,
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+    model_validator,
+)
+
+from app.activities.options import EASE_RATING_ACTIVITY_TYPES, ActivityType, EaseRating
+
 
 def validate_not_future(value: datetime) -> datetime:
-    if value > datetime.now(timezone.utc):
+    if value > datetime.now(UTC):
         raise ValueError("Timestamp cannot be in the future")
 
     return value
@@ -71,8 +80,8 @@ class ActivityUpdate(ActivityInput):
         if (self.started_at is None) != (self.ended_at is None):
             raise ValueError("Both timestamps must be provided together")
 
-        if self.started_at is not None:
-            if self.ended_at <= self.started_at:
+        if (self.started_at is not None
+            and self.ended_at <= self.started_at):
                 raise ValueError("End time must be after start time")
 
         return self

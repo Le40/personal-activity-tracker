@@ -5052,3 +5052,15 @@ WHERE activities.ended_at > ? AND activities.ended_at <= ?
 2026-10-23 22:39:21,886 INFO sqlalchemy.engine.Engine [cached since 3724s ago] ('2026-10-23 03:00:00.000000', '2026-10-24 03:00:00.000000')
 2026-10-23 22:39:21,887 INFO sqlalchemy.engine.Engine ROLLBACK
 2026-10-23 22:39:21,889 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-23 22:58:49,363 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-23 22:58:49,370 INFO sqlalchemy.engine.Engine SELECT activities.id, activities.name, activities.activity_type, activities.started_at, activities.ended_at, activities.notes, activities.ease_rating 
+FROM activities 
+WHERE activities.ended_at IS NULL
+2026-10-23 22:58:49,370 INFO sqlalchemy.engine.Engine [generated in 0.00064s] ()
+2026-10-23 22:58:49,373 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-10-23 22:58:49,386 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-10-23 22:58:49,388 INFO sqlalchemy.engine.Engine SELECT activities.id, activities.name, activities.activity_type, activities.started_at, activities.ended_at, activities.notes, activities.ease_rating 
+FROM activities 
+WHERE activities.ended_at > ? AND activities.ended_at <= ?
+2026-10-23 22:58:49,388 INFO sqlalchemy.engine.Engine [generated in 0.00035s] ('2026-10-23 03:00:00.000000', '2026-10-24 03:00:00.000000')
+2026-10-23 22:58:49,391 INFO sqlalchemy.engine.Engine ROLLBACK

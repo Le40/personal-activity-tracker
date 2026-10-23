@@ -1,10 +1,10 @@
 import pytest
-
 from sqlalchemy.orm import Session
 
 from app.activities.models import Activity
 from tests.api_paths import ACTIVITIES_URL
 from tests.helpers import local_to_utc
+
 
 @pytest.fixture
 def activity_history(test_engine):

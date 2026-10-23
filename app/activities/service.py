@@ -1,8 +1,8 @@
+from datetime import UTC, date, datetime, time, timedelta
+from zoneinfo import ZoneInfo
+
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
-
-from datetime import date, datetime, time, timezone, timedelta
-from zoneinfo import ZoneInfo
 
 from app.activities import schemas
 from app.activities.models import Activity
@@ -26,8 +26,8 @@ def get_activities(
     local_end = datetime.combine(
         end_date + timedelta(days=1), time(REPORTING_DAY_START_HOUR), tzinfo=local_tz)
 
-    day_start   = local_start.astimezone(timezone.utc).replace(tzinfo=None)
-    day_end     = local_end.astimezone(timezone.utc).replace(tzinfo=None)
+    day_start   = local_start.astimezone(UTC).replace(tzinfo=None)
+    day_end     = local_end.astimezone(UTC).replace(tzinfo=None)
 
     statement = statement.where(
         Activity.ended_at > day_start,
@@ -53,7 +53,7 @@ def start_activity(
     db: Session, request: schemas.ActivityInput
 ) -> Activity:
 
-    current_datetime = datetime.now(timezone.utc)
+    current_datetime = datetime.now(UTC)
 
     old_activity = db.scalars(
         select(Activity).where(Activity.ended_at.is_(None))
@@ -84,7 +84,7 @@ def stop_activity(
     if current_activity is None:
         return None
     
-    current_activity.ended_at = datetime.now(timezone.utc)
+    current_activity.ended_at = datetime.now(UTC)
     
     db.commit()
     db.refresh(current_activity)
@@ -107,8 +107,8 @@ def update_activity(
                 "Cannot change timestamps of a running activity"
             )
         # Covert schema timestamps to UTC
-        started_at = request.started_at.astimezone(timezone.utc).replace(tzinfo=None)
-        ended_at = request.ended_at.astimezone(timezone.utc).replace(tzinfo=None)
+        started_at = request.started_at.astimezone(UTC).replace(tzinfo=None)
+        ended_at = request.ended_at.astimezone(UTC).replace(tzinfo=None)
 
         if has_activity_overlap(db, started_at, ended_at, activity_id):
             raise ActivityConflictError("Activity overlaps existing one")
@@ -134,8 +134,8 @@ def add_completed_activity(
 
     data = request.model_dump()
 
-    data["started_at"] = data["started_at"].astimezone(timezone.utc).replace(tzinfo=None)
-    data["ended_at"] = data["ended_at"].astimezone(timezone.utc).replace(tzinfo=None)
+    data["started_at"] = data["started_at"].astimezone(UTC).replace(tzinfo=None)
+    data["ended_at"] = data["ended_at"].astimezone(UTC).replace(tzinfo=None)
     
     activity = Activity(**data)
 

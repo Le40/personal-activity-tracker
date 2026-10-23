@@ -1,12 +1,10 @@
-import pytest
+from datetime import UTC, datetime, timedelta
 
-from datetime import datetime, timedelta, timezone
-from sqlalchemy import create_engine
+import pytest
 from sqlalchemy.orm import Session
 
 from app.activities.models import Activity
 from tests.api_paths import ACTIVITIES_URL
-from tests.conftest import test_engine
 
 TEST_DAY = "2026-10-21"
 
@@ -122,7 +120,7 @@ FUTURE_DATE_CASES = [
 def test_create_and_update_reject_future_dates(client, test_engine,
     method: str, start_offset: timedelta, end_offset: timedelta, invalid_field: str,
 ):
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     started_at = (now + start_offset).isoformat()
     ended_at = (now + end_offset).isoformat()

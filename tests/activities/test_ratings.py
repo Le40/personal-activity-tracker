@@ -1,6 +1,6 @@
 import pytest
 
-from app.activities.options import ActivityType, EASE_RATING_ACTIVITY_TYPES
+from app.activities.options import EASE_RATING_ACTIVITY_TYPES, ActivityType
 from tests.api_paths import ACTIVITIES_URL
 
 

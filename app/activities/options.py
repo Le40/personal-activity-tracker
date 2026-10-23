@@ -1,4 +1,5 @@
-from enum import StrEnum, IntEnum
+from enum import IntEnum, StrEnum
+
 
 class ActivityType(StrEnum):
     WORK = "work"

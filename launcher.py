@@ -129,7 +129,8 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except Exception as error:
+    # Last-resort error handler: display unexpected startup errors to the user.
+    except Exception as error:  # noqa: BLE001
         ctypes.windll.user32.MessageBoxW(
             None,
             str(error),

@@ -1,11 +1,11 @@
+from datetime import UTC, datetime
+
 import pytest
-
-from datetime import datetime, timezone
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
-from app.activities.models import Base, Activity
+from app.activities.models import Activity, Base
 from tests.api_paths import ACTIVITIES_URL
 
 
@@ -55,7 +55,6 @@ def test_start_activity(client):
     get_response = client.get(f"{ACTIVITIES_URL}/{activity_id}")
     assert get_response.status_code == 200
 
-    get_data = get_response.json()
     assert get_response.json() == data
 
 
@@ -156,7 +155,7 @@ def test_only_one_running_activity_allowed(tmp_path):
         first = Activity(
             name="Python",
             activity_type="work",
-            started_at=datetime.now(timezone.utc)
+            started_at=datetime.now(UTC)
         )
 
         db.add(first)
@@ -166,7 +165,7 @@ def test_only_one_running_activity_allowed(tmp_path):
         second = Activity(
             name="Exercise",
             activity_type="exercise",
-            started_at=datetime.now(timezone.utc)
+            started_at=datetime.now(UTC)
         )
 
         db.add(second)

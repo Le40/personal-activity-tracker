@@ -1,21 +1,25 @@
-from fastapi import APIRouter, HTTPException, Depends, Response, status
-
-from sqlalchemy.orm import Session
 from datetime import date
+from typing import Annotated
 
-from app.database import get_session
-from app.activities import service, schemas
+from fastapi import APIRouter, Depends, HTTPException, Response, status
+from sqlalchemy.orm import Session
+
+from app.activities import schemas, service
 from app.activities.options import (
-    ActivityType, EaseRating, EASE_LABELS, EASE_RATING_ACTIVITY_TYPES
+    EASE_LABELS,
+    EASE_RATING_ACTIVITY_TYPES,
+    ActivityType,
+    EaseRating,
 )
-
+from app.database import get_session
 
 router = APIRouter(prefix="/activities", tags=["Activities"])
 
+DbSession = Annotated[Session, Depends(get_session)]
 
 @router.get("", response_model=list[schemas.ActivityResponse])
 def get_activities(
-    start_date: date, end_date: date, db: Session = Depends(get_session)
+    start_date: date, end_date: date, db: DbSession
 ):
     if end_date < start_date:
         raise HTTPException(status_code=422,
@@ -30,7 +34,7 @@ def get_activities(
 
 @router.get("/{activity_id:int}", response_model=schemas.ActivityResponse)
 def get_activity_by_id(
-    activity_id: int, db: Session = Depends(get_session)
+    activity_id: int, db: DbSession
 ):
     activity = service.get_activity_by_id(db, activity_id)
 
@@ -43,7 +47,7 @@ def get_activity_by_id(
 @router.get("/current", response_model=schemas.ActivityResponse,
     responses={204: {"description": "No running activity"}})
 def get_running_activity(
-    db: Session = Depends(get_session)
+    db: DbSession
 ):
     activity = service.get_running_activity(db)
 
@@ -56,7 +60,7 @@ def get_running_activity(
 # STARTS ACTIVITY & STOPS PREVIOUSLY RUNNING ONE
 @router.post("/start", response_model=schemas.ActivityResponse, status_code=201)
 def start_activity(
-    request: schemas.ActivityInput, db: Session = Depends(get_session)
+    request: schemas.ActivityInput, db: DbSession
 ):
     return service.start_activity(db, request)
 
@@ -64,7 +68,7 @@ def start_activity(
 # STOPS CURRENTLY RUNNNING ACTIVITY
 @router.post("/stop",response_model=schemas.ActivityResponse)
 def stop_activity(
-    db: Session = Depends(get_session)
+    db: DbSession
 ):
     activity = service.stop_activity(db)
 
@@ -77,7 +81,7 @@ def stop_activity(
 # UPDATES ACTIVITY
 @router.put("/{activity_id:int}" ,response_model=schemas.ActivityResponse)
 def update_activity(
-    activity_id, request: schemas.ActivityUpdate, db: Session = Depends(get_session)
+    activity_id, request: schemas.ActivityUpdate, db: DbSession
 ):
     try:
         activity = service.update_activity(db, activity_id, request)
@@ -93,7 +97,7 @@ def update_activity(
 # Create a completed activity with manually specified timestamps
 @router.post("" ,response_model=schemas.ActivityResponse, status_code=201)
 def add_completed_activity(
-    request: schemas.CompletedActivityInput, db: Session = Depends(get_session)
+    request: schemas.CompletedActivityInput, db: DbSession
 ):
     try:
         activity = service.add_completed_activity(db, request)
@@ -106,7 +110,7 @@ def add_completed_activity(
 # DELETES COMPLETED ACTIVITY
 @router.delete("/{activity_id:int}",  status_code=204)
 def delete_activity(
-    activity_id, db: Session = Depends(get_session)
+    activity_id, db: DbSession
 ):
     deleted = service.delete_activity(db, activity_id)
 
