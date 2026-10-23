@@ -9,16 +9,26 @@ from app.activities.models import Base, Activity
 from tests.api_paths import ACTIVITIES_URL
 
 
-def test_health_check(client):
-    response = client.get("/health")
+@pytest.mark.parametrize("create_activity , expected_status",
+    [
+        (True, 200), 
+        (False, 204)
+    ])
+def test_get_running_activity(client, create_activity: bool, expected_status: int):
+    if create_activity:
+        start_response = client.post(f"{ACTIVITIES_URL}/start",
+            json={"activity_type": "work"})
+        assert start_response.status_code == 201
+    
+    response = client.get(f"{ACTIVITIES_URL}/current")
 
-    assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response.status_code == expected_status
 
-def test_get_nonexistent_activity(client):
-    response = client.get(f"{ACTIVITIES_URL}/999")
+    if create_activity:
+        assert response.json() == start_response.json()
+    else:
+        assert response.content == b""
 
-    assert response.status_code == 404
 
 def test_stop_without_active_activity(client):
     response = client.post(f"{ACTIVITIES_URL}/stop")
@@ -26,16 +36,16 @@ def test_stop_without_active_activity(client):
     assert response.status_code == 409
     assert response.json() == {"detail": "No active activity"}
 
+
 def test_start_activity(client):
     response = client.post(
         f"{ACTIVITIES_URL}/start", 
-        json={"name": "Python", "activity_type": "work"}
+        json={"activity_type": "work"}
     )
     data = response.json()
     activity_id = data["id"]
 
     assert response.status_code == 201
-    assert data["name"] == "Python"
     assert data["activity_type"] == "work"
     assert data["started_at"] is not None
     assert data["ended_at"] is None
@@ -48,35 +58,69 @@ def test_start_activity(client):
     get_data = get_response.json()
     assert get_response.json() == data
 
+
+def test_start_invalid_activity(client):
+    response = client.post(f"{ACTIVITIES_URL}/start", json={"name": " ", "activity_type": "xxxx"})
+
+    assert response.status_code == 422
+
+    get_response = client.get(f"{ACTIVITIES_URL}/current")
+
+    assert get_response.status_code == 204
+
+
+@pytest.mark.parametrize("value", ["", "   ", None])
+def test_start_empty_optional_fields(client, value: str | None):
+    response = client.post(
+        f"{ACTIVITIES_URL}/start",
+        json={
+            "activity_type": "work",
+            "name": value,
+            "notes": value,
+        }
+    )
+
+    assert response.status_code == 201
+
+    data = response.json()
+
+    assert data["name"] is None
+    assert data["notes"] is None
+
+
 def test_switch_activity(client):
-    first= client.post(f"{ACTIVITIES_URL}/start", json={"name": "Python", "activity_type": "work"})
-    second= client.post(f"{ACTIVITIES_URL}/start", json={"name": "Pydantic", "activity_type": "work"})
+    first = client.post(
+        f"{ACTIVITIES_URL}/start",
+        json={"activity_type": "work"}
+    )
+
+    second = client.post(
+        f"{ACTIVITIES_URL}/start",
+        json={"name": "Pydantic", "activity_type": "work"}
+    )
 
     assert first.status_code == 201
     assert second.status_code == 201
 
-    get_response = client.get(f"{ACTIVITIES_URL}")
-    activities = get_response.json()
+    first_id = first.json()["id"]
+    second_id = second.json()["id"]
 
-    assert get_response.status_code == 200
-    assert len(activities) == 2
+    first_response = client.get(f"{ACTIVITIES_URL}/{first_id}")
+    second_response = client.get(f"{ACTIVITIES_URL}/{second_id}")
 
-    first_activity = next(
-        activity for activity in activities
-        if activity["id"] == first.json()["id"]
-    )
+    assert first_response.status_code == 200
+    assert second_response.status_code == 200
 
-    second_activity = next(
-        activity for activity in activities
-        if activity["id"] == second.json()["id"]
-    )
+    first_activity = first_response.json()
+    second_activity = second_response.json()
 
     assert first_activity["ended_at"] is not None
     assert second_activity["ended_at"] is None
     assert second_activity["started_at"] == first_activity["ended_at"]
 
+
 def test_stop_activity(client):
-    start_response = client.post(f"{ACTIVITIES_URL}/start", json={"name": "Python", "activity_type": "work"})
+    start_response = client.post(f"{ACTIVITIES_URL}/start", json={"activity_type": "work"})
     assert start_response.status_code == 201
 
     start_data = start_response.json()
@@ -98,16 +142,6 @@ def test_stop_activity(client):
     assert get_data["id"] == start_data["id"]
     assert get_data["ended_at"] == stop_data["ended_at"]
 
-def test_start_invalid_name(client):
-    response = client.post(f"{ACTIVITIES_URL}/start", json={"name": " ", "activity_type": "work"})
-
-    assert response.status_code == 422
-
-    get_response = client.get(f"{ACTIVITIES_URL}")
-    activities = get_response.json()
-
-    assert get_response.status_code == 200
-    assert len(activities) == 0
 
 def test_only_one_running_activity_allowed(tmp_path):
     # Create an isolated test database
@@ -145,7 +179,8 @@ def test_only_one_running_activity_allowed(tmp_path):
 
     test_engine.dispose()
 
-def test_update_activity(client):
+
+def test_update_running_activity(client):
     response = client.post(
         f"{ACTIVITIES_URL}/start", json={"name": "python", "activity_type": "work"})
     assert response.status_code == 201

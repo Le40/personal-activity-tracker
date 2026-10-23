@@ -7,29 +7,32 @@ from zoneinfo import ZoneInfo
 from app.activities import schemas
 from app.activities.models import Activity
 
+REPORTING_DAY_START_HOUR = 5
+
 
 class ActivityConflictError(Exception):
     pass
 
 def get_activities(
-        db: Session, day: date | None = None
+        db: Session, start_date: date, end_date: date
 ) -> list[Activity]:
 
     statement = select(Activity)
 
-    if day is not None:
-        local_tz = ZoneInfo("Europe/Bratislava")
+    local_tz = ZoneInfo("Europe/Bratislava")
 
-        local_start = datetime.combine(day, time(5), tzinfo=local_tz)
-        local_end = datetime.combine(day + timedelta(days=1), time(5), tzinfo=local_tz)
+    local_start = datetime.combine(
+        start_date, time(REPORTING_DAY_START_HOUR), tzinfo=local_tz)
+    local_end = datetime.combine(
+        end_date + timedelta(days=1), time(REPORTING_DAY_START_HOUR), tzinfo=local_tz)
 
-        day_start = local_start.astimezone(timezone.utc).replace(tzinfo=None)
-        day_end = local_end.astimezone(timezone.utc).replace(tzinfo=None)
+    day_start   = local_start.astimezone(timezone.utc).replace(tzinfo=None)
+    day_end     = local_end.astimezone(timezone.utc).replace(tzinfo=None)
 
-        statement = statement.where(
-            Activity.ended_at > day_start,
-            Activity.ended_at <= day_end    
-        )
+    statement = statement.where(
+        Activity.ended_at > day_start,
+        Activity.ended_at <= day_end    
+    )
 
     return db.scalars(statement).all()
 
@@ -38,6 +41,12 @@ def get_activity_by_id(
         db: Session, activity_id: int
 ) -> Activity | None:
     return db.get(Activity, activity_id)
+
+def get_running_activity(
+        db: Session
+) -> Activity | None:
+    statement = select(Activity).where(Activity.ended_at.is_(None))
+    return db.scalar(statement)
 
 
 def start_activity(

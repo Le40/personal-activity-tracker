@@ -1,5 +1,4 @@
-from fastapi import APIRouter
-from fastapi import HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Response, status
 
 from sqlalchemy.orm import Session
 from datetime import date
@@ -16,21 +15,17 @@ router = APIRouter(prefix="/activities", tags=["Activities"])
 
 @router.get("", response_model=list[schemas.ActivityResponse])
 def get_activities(
-    day: date | None = None, db: Session = Depends(get_session)
+    start_date: date, end_date: date, db: Session = Depends(get_session)
 ):
-    return service.get_activities(db, day)
+    if end_date < start_date:
+        raise HTTPException(status_code=422,
+            detail="End date cannot be before start date")
 
-# Create a completed activity with manually specified timestamps
-@router.post("" ,response_model=schemas.ActivityResponse, status_code=201)
-def add_completed_activity(
-    request: schemas.CompletedActivityInput, db: Session = Depends(get_session)
-):
-    try:
-        activity = service.add_completed_activity(db, request)
-    except service.ActivityConflictError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    
-    return activity
+    if (end_date - start_date).days >= 31:
+        raise HTTPException(status_code=422,
+            detail="Date range cannot exceed 31 days")
+
+    return service.get_activities(db, start_date, end_date)
 
 
 @router.get("/{activity_id:int}", response_model=schemas.ActivityResponse)
@@ -44,12 +39,27 @@ def get_activity_by_id(
 
     return activity
 
+
+@router.get("/current", response_model=schemas.ActivityResponse,
+    responses={204: {"description": "No running activity"}})
+def get_running_activity(
+    db: Session = Depends(get_session)
+):
+    activity = service.get_running_activity(db)
+
+    if activity is None:
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    return activity
+
+
 # STARTS ACTIVITY & STOPS PREVIOUSLY RUNNING ONE
 @router.post("/start", response_model=schemas.ActivityResponse, status_code=201)
 def start_activity(
     request: schemas.ActivityInput, db: Session = Depends(get_session)
 ):
     return service.start_activity(db, request)
+
 
 # STOPS CURRENTLY RUNNNING ACTIVITY
 @router.post("/stop",response_model=schemas.ActivityResponse)
@@ -63,7 +73,8 @@ def stop_activity(
     
     return activity
 
-# UPDATES CURRENTLY RUNNING ACTIVITY
+
+# UPDATES ACTIVITY
 @router.put("/{activity_id:int}" ,response_model=schemas.ActivityResponse)
 def update_activity(
     activity_id, request: schemas.ActivityUpdate, db: Session = Depends(get_session)
@@ -78,6 +89,20 @@ def update_activity(
         
     return activity
 
+
+# Create a completed activity with manually specified timestamps
+@router.post("" ,response_model=schemas.ActivityResponse, status_code=201)
+def add_completed_activity(
+    request: schemas.CompletedActivityInput, db: Session = Depends(get_session)
+):
+    try:
+        activity = service.add_completed_activity(db, request)
+    except service.ActivityConflictError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    
+    return activity
+
+
 # DELETES COMPLETED ACTIVITY
 @router.delete("/{activity_id:int}",  status_code=204)
 def delete_activity(
@@ -87,7 +112,6 @@ def delete_activity(
 
     if not deleted:
         raise HTTPException(status_code=404, detail="Activity not found")
-
 
 
 @router.get("/options")

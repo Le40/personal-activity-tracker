@@ -1,3 +1,14 @@
+/* ==================================================
+   UI SETTINGS
+   ================================================== */
+
+:root {
+    --history-height: 160px;
+    --history-font-size: 11px;
+    --history-date-picker-width: 130px;
+    --collapse-duration: 250ms;
+}
+
 /* Classic attached folder tabs: selected tab and form panel are one surface. */
 .activity-section {
     border: 0;
@@ -135,3 +146,220 @@
 
 /* Never show fields hidden by the current form mode. */
 .activity-section [hidden] { display: none !important; }
+
+/* Vue hides uninitialized bindings until the application mounts. */
+[v-cloak] { display: none !important; }
+
+#activities {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    height: var(--history-height);
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+}
+#activities li { border-bottom: 1px solid #eee; }
+#activities li:last-child { border-bottom: 0; }
+#activities .history-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 6px;
+    align-items: baseline;
+    width: 100%;
+    padding: 6px 2px;
+    border: 0;
+    background: transparent;
+    border-radius: 0;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+#activities .history-item:hover { background: #f2f6fc; }
+#activities .history-item:focus-visible { outline: 2px solid #3779d1; outline-offset: -2px; }
+#activities .history-time {
+    color: #666;
+    font-size: var(--history-font-size);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+#activities .history-name { font-weight: 600; overflow-wrap: anywhere; }
+#activities .history-details {
+    display: grid;
+    grid-template-columns: 41px 6px 41px;
+    gap: 2px;
+    justify-self: end;
+
+    color: #666;
+    font-size: var(--history-font-size);
+    white-space: nowrap;
+}
+#activities .empty-history { padding: 6px 2px; color: #777; }
+#activities .history-type {
+    text-align: right;
+}
+
+#activities .history-separator {
+    text-align: center;
+}
+
+#activities .history-duration {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.history-date-picker {
+    width: var(--history-date-picker-width);
+    padding: 4px 6px;
+    font-size: 11px;
+}
+/* Compact confirmation dialog for small application windows. */
+
+.confirm-dialog {
+    box-sizing: border-box;
+    width: min(300px, calc(100vw - 24px));
+    max-height: calc(100vh - 24px);
+
+    padding: 16px;
+    border: 1px solid #c6cdd8;
+    border-radius: 8px;
+
+    background: white;
+    color: #222;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.confirm-dialog p {
+    margin: 0 0 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.confirm-actions button {
+    min-width: 65px;
+}
+
+/* Collapsed mode: use the full available window height. */
+/* Keep the same layout in both modes so dimensions can animate. */
+#app {
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - 20px);
+    min-height: 260px;
+}
+
+/* History smoothly expands when the form collapses. */
+#app > section[aria-labelledby="historyHeading"] {
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 auto;
+    min-height: 0;
+
+    transition: flex-grow var(--collapse-duration) ease;
+}
+
+#app.form-collapsed > section[aria-labelledby="historyHeading"] {
+    flex-grow: 1;
+}
+
+#app.form-collapsed #activities {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: var(--history-height);
+    max-height: none;
+    overflow-y: auto;
+}
+
+/* Keep the tracking form at the bottom. */
+#app.form-collapsed .activity-section {
+    flex: 0 0 auto;
+    margin-bottom: 0;
+}
+
+/* Animate the form's actual height, without fixed pixel values. */
+#activityFormBody {
+    display: grid;
+    grid-template-rows: 1fr;
+    opacity: 1;
+
+    transition:
+        grid-template-rows var(--collapse-duration) ease,
+        opacity 180ms ease;
+}
+
+#activityFormBody > .form-body-inner {
+    min-height: 0;
+    overflow: hidden;
+}
+
+#app.form-collapsed #activityFormBody {
+    grid-template-rows: 0fr;
+    opacity: 0;
+}
+
+/* Animate the spacing below the activity heading. */
+.activity-panel .section-header {
+    transition: margin-bottom var(--collapse-duration) ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #app > section[aria-labelledby="historyHeading"],
+    #activityFormBody,
+    .activity-panel .section-header {
+        transition: none;
+    }
+}
+
+#app.form-collapsed .activity-panel .section-header {
+    margin-bottom: 0;
+}
+
+/* Collapse / expand button beside the activity tabs */
+.form-tabs .form-collapse-button {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: auto;
+    align-self: center;
+
+    flex: 0 0 26px;
+    width: 26px;
+    min-width: 26px;
+    height: 26px;
+    padding: 0;
+
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+
+    color: #586476;
+    background: #f5f7fa;
+    border: 1px solid #c6cdd8;
+    border-radius: 5px;
+
+    cursor: pointer;
+}
+
+.form-tabs .form-collapse-button:hover {
+    background: #e7edf6;
+}
+
+.form-tabs .form-collapse-button:focus-visible {
+    outline: 2px solid #3779d1;
+    outline-offset: 2px;
+}

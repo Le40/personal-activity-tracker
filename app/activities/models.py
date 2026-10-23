@@ -16,15 +16,15 @@ class Activity(Base):
         ),
     )
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(30))
-    activity_type: Mapped[str] = mapped_column(String(15))
+    id              : Mapped[int]               = mapped_column(primary_key=True)
+    name            : Mapped[str | None]        = mapped_column(String(30), nullable=True)
+    activity_type   : Mapped[str]               = mapped_column(String(15))
 
-    started_at: Mapped[datetime] = mapped_column(DateTime)
-    ended_at: Mapped[datetime | None] = mapped_column(DateTime)
+    started_at      : Mapped[datetime]          = mapped_column(DateTime)
+    ended_at        : Mapped[datetime | None]   = mapped_column(DateTime)
 
-    notes: Mapped[str | None] = mapped_column(nullable=True)
-    ease_rating: Mapped[int | None] = mapped_column(nullable=True)
+    notes           : Mapped[str | None]        = mapped_column(nullable=True)
+    ease_rating     : Mapped[int | None]        = mapped_column(nullable=True)
 
 
 running_activity_index = Index(

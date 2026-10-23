@@ -3,9 +3,10 @@ import pytest
 from app.activities.options import ActivityType, EASE_RATING_ACTIVITY_TYPES
 from tests.api_paths import ACTIVITIES_URL
 
+
 # TEST EASE RATING AGAINST ACTIVITY TYPES
 @pytest.mark.parametrize("activity_type", ActivityType)
-def test_ease_rating_validation(client, activity_type):
+def test_ease_rating_validation(client, activity_type: ActivityType):
     response = client.post(f"{ACTIVITIES_URL}/start", json={
         "name": "Test rating",
         "activity_type": activity_type.value,
@@ -18,9 +19,10 @@ def test_ease_rating_validation(client, activity_type):
     else:
         assert response.status_code == 422
 
+
 # TEST EASE RATING AGAINST ACTIVITY TYPES
 @pytest.mark.parametrize("activity_type", ActivityType)
-def test_start_work_without_rating(client, activity_type):
+def test_start_work_without_rating(client, activity_type: ActivityType):
     response = client.post(f"{ACTIVITIES_URL}/start", json={
         "name": "Test rating",
         "activity_type": activity_type.value,
@@ -28,6 +30,7 @@ def test_start_work_without_rating(client, activity_type):
 
     assert response.status_code == 201
     assert response.json()["ease_rating"] is None
+
 
 # TEST EASE RATING OUTSIDE BOUNDARY
 @pytest.mark.parametrize("activity_type", EASE_RATING_ACTIVITY_TYPES)
@@ -37,7 +40,9 @@ def test_start_work_without_rating(client, activity_type):
     (5, 201),
     (6, 422),
 ])
-def test_rating_outside_boundary(client, activity_type, rating, expected_status):
+def test_rating_outside_boundary(client, 
+    activity_type: ActivityType, rating: int, expected_status: int
+):
     response = client.post(f"{ACTIVITIES_URL}/start", json={
         "name": "Test rating",
         "activity_type": activity_type.value,
@@ -46,9 +51,10 @@ def test_rating_outside_boundary(client, activity_type, rating, expected_status)
 
     assert response.status_code == expected_status
 
+
 # TEST CHANGE IN RATING
 @pytest.mark.parametrize("activity_type", EASE_RATING_ACTIVITY_TYPES)
-def test_ease_rating_change(client, activity_type):
+def test_ease_rating_change(client, activity_type: ActivityType):
     start_response = client.post(f"{ACTIVITIES_URL}/start", json={
         "name": "Test rating",
         "activity_type": activity_type.value,
@@ -74,12 +80,11 @@ def test_ease_rating_change(client, activity_type):
     assert get_data["ease_rating"] == 2
 
 
-
 # TEST CHANGE IN ACTIVITY TYPE WITH EASE RATING
 @pytest.mark.parametrize("supported_type", EASE_RATING_ACTIVITY_TYPES)
 @pytest.mark.parametrize("unsupported_type", set(ActivityType) - EASE_RATING_ACTIVITY_TYPES)
 def test_change_to_unsupported_type_with_rating_is_rejected(
-    client, supported_type, unsupported_type
+    client, supported_type: ActivityType, unsupported_type: ActivityType
 ):
     start_response = client.post(f"{ACTIVITIES_URL}/start", json={
         "name": "Test rating",

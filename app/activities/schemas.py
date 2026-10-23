@@ -1,29 +1,47 @@
-from datetime import datetime
-from typing import Self
-from pydantic import AwareDatetime, model_validator
+from datetime import datetime, timezone
+from typing import Annotated, Self
+from pydantic import AfterValidator, AwareDatetime, field_validator, model_validator
 from app.activities.options import ActivityType, EaseRating, EASE_RATING_ACTIVITY_TYPES
 
 from pydantic import BaseModel, ConfigDict, Field
+
+def validate_not_future(value: datetime) -> datetime:
+    if value > datetime.now(timezone.utc):
+        raise ValueError("Timestamp cannot be in the future")
+
+    return value
+
+PastDatetime = Annotated[
+    AwareDatetime,
+    AfterValidator(validate_not_future),
+]
 
 
 class ActivityResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: int
-    name: str
-    activity_type: ActivityType
-    started_at: datetime
-    ended_at: datetime | None
-    notes: str | None
-    ease_rating: EaseRating | None
+    id              : int
+    name            : str | None
+    activity_type   : ActivityType
+    started_at      : datetime
+    ended_at        : datetime | None
+    notes           : str | None
+    ease_rating     : EaseRating | None
 
 class ActivityInput(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    name: str = Field(min_length=1, max_length=30)
-    activity_type: ActivityType
-    notes: str | None = None
-    ease_rating: EaseRating | None = None
+    name            : str | None = Field(default=None, min_length=1, max_length=30)
+    activity_type   : ActivityType
+    notes           : str | None = None
+    ease_rating     : EaseRating | None = None
+
+    @field_validator("name", "notes", mode="before")
+    @classmethod
+    def empty_to_none(cls, value: str | None) -> str | None:
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
 
     @model_validator(mode="after")
     def validate_ease_rating(self) -> Self:
@@ -35,8 +53,8 @@ class ActivityInput(BaseModel):
         return self
 
 class CompletedActivityInput(ActivityInput):
-    started_at: AwareDatetime
-    ended_at: AwareDatetime
+    started_at: PastDatetime
+    ended_at:   PastDatetime
 
     @model_validator(mode="after")
     def validate_time_range(self) -> Self:
@@ -45,8 +63,8 @@ class CompletedActivityInput(ActivityInput):
         return self
 
 class ActivityUpdate(ActivityInput):
-    started_at: AwareDatetime | None = None
-    ended_at: AwareDatetime | None = None
+    started_at: PastDatetime | None = None
+    ended_at:   PastDatetime | None = None
 
     @model_validator(mode="after")
     def validate_timestamps(self) -> Self:
