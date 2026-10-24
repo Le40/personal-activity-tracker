@@ -117,8 +117,8 @@ Vue.createApp({
             formMode: "current", // current | add | edit
             form: emptyForm(),
             formCollapsed: false,
-            collapsedBeforeForm: false,
             activeActivity: null,
+            pendingRatingActivity: null, // Recently stopped Work activity awaiting rating
             editingActivity: null,
             history: [],
             historyDate: reportingDay(),
@@ -136,6 +136,20 @@ Vue.createApp({
     },
 
     computed: {
+        currentView() {
+            if (this.pendingRatingActivity) return "rating";
+            return this.activeActivity ? "running" : "ready";
+        },
+        currentTabLabel() {
+            const activity = this.pendingRatingActivity ?? this.activeActivity;
+            if (!activity) return "Current activity";
+            const name = activity.name?.trim() || "Unnamed";
+            return `${name} | ${this.typeLabel(activity.activity_type)}`;
+        },
+        runningStatusText() {
+            if (this.statusMessage === "● Unsaved changes") return "● Unsaved";
+            return this.statusMessage;
+        },
         heading() {
             if (this.formMode === "edit") return "Edit Activity";
             if (this.formMode === "add") return "Add Past Activity";
@@ -357,17 +371,13 @@ Vue.createApp({
                 if (!await this.runAction(() => this.saveCurrent())) return;
             }
             clearTimeout(this.autosaveTimer);
-            // Remember the browsing state when opening Add or Edit.
-            if (this.formMode === "current" && mode !== "current") {
-                this.collapsedBeforeForm = this.formCollapsed;
-            }
-
-            // Expand when opening a form, restore when returning.
-            this.formCollapsed = mode === "current"
-                ? this.collapsedBeforeForm
-                : false;
+            // Current Activity is always expanded. Past forms may still be collapsed.
+            this.formCollapsed = false;
 
             this.formMode = mode;
+            // Leaving the Past form returns to the live state (Ready or Running),
+            // not to a rating prompt left over from a previously stopped activity.
+            if (mode === "current") this.pendingRatingActivity = null;
             this.editingActivity = mode === "edit" ? activity : null;
             this.populateForm(mode === "edit" ? activity : mode === "current" ? this.activeActivity : null);
             if (mode === "add") {
@@ -402,14 +412,36 @@ Vue.createApp({
                 await apiRequest(url, jsonOptions(method, data));
                 this.formMode = "current";
                 this.editingActivity = null;
-                this.formCollapsed = this.collapsedBeforeForm;
+                this.formCollapsed = false;
             });
         },
         async stopActivity() {
             await this.runAction(async () => {
                 if (this.formDirty) await this.saveCurrent();
-                await apiRequest(`${ACTIVITIES_URL}/stop`, { method: "POST" });
+                const stopped = await apiRequest(`${ACTIVITIES_URL}/stop`, { method: "POST" });
+                const type = this.activityOptions.find(
+                    item => item.value === stopped.activity_type
+                );
+                this.pendingRatingActivity = type?.supports_ease_rating ? stopped : null;
             });
+        },
+        async finishRating(rating) {
+            if (!this.pendingRatingActivity) return;
+            await this.runAction(async () => {
+                const activity = this.pendingRatingActivity;
+                await apiRequest(`${ACTIVITIES_URL}/${activity.id}`, jsonOptions("PUT", {
+                    name: activity.name,
+                    activity_type: activity.activity_type,
+                    notes: activity.notes,
+                    ease_rating: rating
+                }));
+                this.pendingRatingActivity = null;
+            });
+        },
+        skipRating() {
+            if (this.busy) return;
+            this.pendingRatingActivity = null;
+            this.populateForm(this.activeActivity);
         },
         async deleteActivity() {
             const activity = this.formMode === "edit" ? this.editingActivity : this.activeActivity;
@@ -425,7 +457,6 @@ Vue.createApp({
                 await apiRequest(`${ACTIVITIES_URL}/${activity.id}`, { method: "DELETE" });
                 this.formMode = "current";
                 this.editingActivity = null;
-                this.formCollapsed = this.collapsedBeforeForm;
             });
         },
         async suggestPastTimes() {
@@ -452,7 +483,7 @@ Vue.createApp({
             let previousEnd = null;
             let suggestion = null;
 
-            // Find gaps between completed activities.
+            // Find gaps between completed activities.computed: {
             for (const activity of completed) {
                 const start = parseTimestamp(activity.started_at);
                 const end = parseTimestamp(activity.ended_at);

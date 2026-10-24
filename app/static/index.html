@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Activity Tracker</title>
     <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="/static/ui-additions.css?v=2">
+    <link rel="stylesheet" href="/static/ui-additions.css?v=8">
 </head>
 <body>
     <main id="app" v-cloak>
         <h1>Activity Tracker</h1>
 
-        <section aria-labelledby="historyHeading">
+        <section aria-labelledby="historyHeading" :class="{ 'history-fills': formMode === 'current' }">
             <div class="section-header">
                 <h2 id="historyHeading">Activity History</h2>
 
@@ -48,15 +48,18 @@
             </ul>
         </section>
 
-        <section class="activity-section" aria-labelledby="activityHeading">
+        <section class="activity-section" aria-label="Activity form">
             <div class="form-tabs" role="group" aria-label="Activity mode">
-                <button class="mode-tab" type="button" :aria-pressed="formMode === 'current'"
-                        :disabled="busy" @click="changeMode('current')">Current activity</button>
+                <button class="mode-tab current-tab" type="button" :aria-pressed="formMode === 'current'"
+                        :disabled="busy" :title="currentTabLabel" @click="changeMode('current')">
+                    {{ formMode === 'current' ? currentTabLabel : 'Current activity' }}
+                </button>
                 <button class="mode-tab" type="button" :aria-pressed="formMode !== 'current'"
-                        :disabled="busy" @click="changeMode('add')">Past activity</button>
+                        :disabled="busy" @click="changeMode('add')">{{ formMode === 'edit' ? 'Edit activity' : 'Past activity' }}</button>
                 <button
                     type="button"
                     class="form-collapse-button"
+                    v-if="formMode !== 'current'"
                     :aria-expanded="!formCollapsed"
                     aria-controls="activityFormBody"
                     :title="formCollapsed ? 'Expand form' : 'Collapse form'"
@@ -68,101 +71,170 @@
             </div>
 
             <div class="activity-panel">
-                <div class="section-header">
-                    <h2 id="activityHeading">{{ heading }}</h2>
-
-                    <span id="timer" v-show="formMode === 'current'">
-                        {{ timerText }}
-                    </span>
-                </div>
-
                 <div id="activityFormBody" :inert="formCollapsed">
                     <div class="form-body-inner">
-
-                        <div class="form-row field">
-                            <div>
-                                <label for="activityName">Name (optional)</label>
-                                <input id="activityName" type="text" maxlength="30" placeholder="Optional name"
-                                    v-model="form.name" :disabled="busy" @input="markUnsaved">
-                            </div>
-                            <div>
-                                <label for="activityType">Type</label>
-                                <select id="activityType" v-model="form.activity_type" :disabled="busy"
-                                        @change="onTypeChanged">
-                                    <option v-for="type in activityOptions" :key="type.value" :value="type.value">
-                                        {{ type.label }}
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div id="timeFields" class="form-row field" v-show="formMode !== 'current'">
-                            <div>
-                                <label for="startedAt">Start time</label>
-                                <div class="datetime-control">
-                                    <span class="datetime-display" aria-hidden="true">
-                                        {{ datetimeLabel(form.started_at) }}
-                                    </span>
-                                    <svg class="calendar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                        <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
-                                        <path d="M7 3v5M17 3v5M3 10h18" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                        <Transition name="mode-switch">
+                            <div v-if="formMode === 'current'" key="current" class="mode-content">
+                                <!-- State 1: ready -->
+                            <div v-if="currentView === 'ready'" class="current-ready">
+                                <div class="field compact-field">
+                                    <label for="readyName">Name (optional)</label>
+                                    <input id="readyName" type="text" maxlength="30"
+                                           placeholder="Optional name" v-model="form.name" :disabled="busy">
+                                </div>
+                                <div class="field compact-field">
+                                    <label for="readyType">Type</label>
+                                    <select id="readyType" v-model="form.activity_type" :disabled="busy">
+                                        <option v-for="type in activityOptions" :key="type.value" :value="type.value">
+                                            {{ type.label }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <button class="primary-icon-button play-button" type="button" aria-label="Start activity"
+                                        title="Start activity" :disabled="busy" @click="startActivity">
+                                    <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                        <path d="M11 5.5C11 4.5 12.1 4 13 4.6L41 22.3a2 2 0 0 1 0 3.4L13 43.4c-.9.6-2 .1-2-.9Z" fill="currentColor"/>
                                     </svg>
-                                    <input id="startedAt" type="datetime-local" lang="sk-SK" step="60"
-                                        aria-label="Select start date and time" v-model="form.started_at"
-                                        :disabled="busy" @input="markUnsaved" @change="markUnsaved"
-                                        @click="openDatePicker">
+                                </button>
+                            </div>
+
+                            <!-- State 2: running -->
+                            <div v-else-if="currentView === 'running'" class="current-running">
+                                <div class="field compact-field">
+                                    <label class="visually-hidden" for="runningNotes">Notes</label>
+                                    <textarea id="runningNotes" rows="5" placeholder="Notes (optional)..."
+                                              v-model="form.notes" :disabled="busy" @input="markUnsaved"></textarea>
+                                </div>
+                                <div class="running-controls">
+                                    <span class="running-timer" aria-label="Elapsed time">{{ timerText }}</span>
+                                    <span v-if="statusMessage" class="running-save-status" role="status"
+                                          aria-live="polite" :class="statusState" :title="statusMessage">{{ runningStatusText }}</span>
+                                    <button class="primary-icon-button stop-button" type="button" aria-label="Stop activity"
+                                            title="Stop activity" :disabled="busy" @click="stopActivity">
+                                        <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                            <rect x="7" y="7" width="34" height="34" rx="3" fill="currentColor"/>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
-                            <div>
-                                <label for="endedAt">End time</label>
-                                <div class="datetime-control">
-                                    <span class="datetime-display" aria-hidden="true">
-                                        {{ datetimeLabel(form.ended_at) }}
-                                    </span>
-                                    <svg class="calendar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                        <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
-                                        <path d="M7 3v5M17 3v5M3 10h18" fill="none" stroke="currentColor" stroke-width="1.8"/>
-                                    </svg>
-                                    <input id="endedAt" type="datetime-local" lang="sk-SK" step="60"
-                                        aria-label="Select end date and time" v-model="form.ended_at"
-                                        :disabled="busy" @input="markUnsaved" @change="markUnsaved"
-                                        @click="openDatePicker">
+
+                            <!-- State 3: rating, shown only for supported types. -->
+                            <div v-else class="rating-state">
+                                <p class="rating-question">How easy did the work feel?</p>
+                                <div class="rating-controls">
+                                    <button v-for="rating in easeRatings" :key="rating.value" type="button"
+                                            class="rating-button" :disabled="busy"
+                                            :aria-label="`${rating.value}: ${rating.label}`" :title="rating.label"
+                                            @click="finishRating(rating.value)">{{ rating.value }}</button>
+                                    <button class="primary-icon-button skip-button" type="button" aria-label="Skip rating"
+                                            title="Skip rating" :disabled="busy" @click="skipRating">
+                                        <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                            <path d="M11 11 37 37M37 11 11 37" fill="none" stroke="currentColor"
+                                                  stroke-width="5" stroke-linecap="round"/>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
-                        </div>
+                            </div>
 
-                        <div class="field">
-                            <label for="activityNotes">Notes</label>
-                            <textarea id="activityNotes" rows="3" placeholder="Optional notes..."
-                                    v-model="form.notes" :disabled="busy" @input="markUnsaved"></textarea>
-                        </div>
+                            <div v-else key="past" class="mode-content">
+                            <div class="form-row field">
+                                <div>
+                                    <label for="activityName">Name (optional)</label>
+                                    <input id="activityName" type="text" maxlength="30" placeholder="Optional name"
+                                        v-model="form.name" :disabled="busy" @input="markUnsaved">
+                                </div>
+                                <div>
+                                    <label for="activityType">Type</label>
+                                    <select id="activityType" v-model="form.activity_type" :disabled="busy"
+                                            @change="onTypeChanged">
+                                        <option v-for="type in activityOptions" :key="type.value" :value="type.value">
+                                            {{ type.label }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
 
-                        <div class="field" id="ratingField" v-show="supportsRating">
-                            <label for="easeRating">Ease of work</label>
-                            <select id="easeRating" v-model="form.ease_rating" :disabled="busy" @change="markUnsaved">
-                                <option value="">Not rated</option>
-                                <option v-for="rating in easeRatings" :key="rating.value" :value="String(rating.value)">
-                                    {{ rating.value }} - {{ rating.label }}
-                                </option>
-                            </select>
-                        </div>
+                            <div id="timeFields" class="form-row field">
+                                <div>
+                                    <label for="startedAt">Start time</label>
+                                    <div class="datetime-control">
+                                        <span class="datetime-display" aria-hidden="true">
+                                            {{ datetimeLabel(form.started_at) }}
+                                        </span>
+                                        <svg class="calendar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                            <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                                            <path d="M7 3v5M17 3v5M3 10h18" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                                        </svg>
+                                        <input id="startedAt" type="datetime-local" lang="sk-SK" step="60"
+                                            aria-label="Select start date and time" v-model="form.started_at"
+                                            :disabled="busy" @input="markUnsaved" @change="markUnsaved"
+                                            @click="openDatePicker">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="endedAt">End time</label>
+                                    <div class="datetime-control">
+                                        <span class="datetime-display" aria-hidden="true">
+                                            {{ datetimeLabel(form.ended_at) }}
+                                        </span>
+                                        <svg class="calendar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                            <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                                            <path d="M7 3v5M17 3v5M3 10h18" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                                        </svg>
+                                        <input id="endedAt" type="datetime-local" lang="sk-SK" step="60"
+                                            aria-label="Select end date and time" v-model="form.ended_at"
+                                            :disabled="busy" @input="markUnsaved" @change="markUnsaved"
+                                            @click="openDatePicker">
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div class="actions">
-                            <button v-if="formMode === 'current' && !activeActivity" type="button"
-                                    :disabled="busy" @click="startActivity">Start Activity</button>
-                            <button v-if="formMode !== 'current' || activeActivity" type="button"
-                                    :disabled="busy" @click="saveActivity">Save</button>
-                            <button v-if="formMode === 'current' && activeActivity" type="button"
-                                    :disabled="busy" @click="stopActivity">Stop</button>
-                            <button v-if="(formMode === 'current' && activeActivity) || formMode === 'edit'"
-                                    type="button" :disabled="busy" @click="deleteActivity">Delete</button>
-                            <button v-if="formMode !== 'current'" type="button"
-                                    :disabled="busy" @click="changeMode('current')">Cancel</button>
-                            <span id="saveStatus" role="status" aria-live="polite" :class="statusState">
-                                {{ statusMessage }}
-                            </span>
-                        </div>
-                        <i>Ctrl + win + t</i>
+                            <div class="field past-notes-field">
+                                <label class="visually-hidden" for="activityNotes">Notes</label>
+                                <textarea id="activityNotes" rows="3" placeholder="Notes (optional)..."
+                                        v-model="form.notes" :disabled="busy" @input="markUnsaved"></textarea>
+                            </div>
+
+                            <div class="past-toolbar">
+                                <div v-if="supportsRating" class="past-rating-field">
+                                    <label for="easeRating">Ease of work</label>
+                                    <select id="easeRating" v-model="form.ease_rating" :disabled="busy" @change="markUnsaved">
+                                        <option value="">Not rated</option>
+                                        <option v-for="rating in easeRatings" :key="rating.value" :value="String(rating.value)">
+                                            {{ rating.value }} - {{ rating.label }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="past-actions" role="group" aria-label="Activity actions">
+                                    <button type="button" class="past-icon-button save-icon" aria-label="Save activity"
+                                            title="Save activity" :disabled="busy" @click="saveActivity">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                            <path d="M4 3h13l3 3v15H4zM8 3v7h8V3M8 21v-8h8v8"
+                                                  fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                    <button v-if="formMode === 'edit'" type="button" class="past-icon-button delete-icon"
+                                            aria-label="Delete activity" title="Delete activity" :disabled="busy" @click="deleteActivity">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                            <path d="M4 7h16M9 7V4h6v3m3 0-.8 13H6.8L6 7M10 11v6m4-6v6"
+                                                  fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                    <button type="button" class="past-icon-button cancel-icon" aria-label="Cancel editing"
+                                            title="Cancel editing" :disabled="busy" @click="changeMode('current')">
+                                        <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                                            <path d="M11 11 37 37M37 11 11 37" fill="none" stroke="currentColor"
+                                                  stroke-width="5" stroke-linecap="round"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            </div>
+                        </Transition>
+                        <div v-if="statusMessage && (formMode !== 'current' || currentView !== 'running')"
+                             id="saveStatus" role="status" aria-live="polite"
+                             :class="statusState">{{ statusMessage }}</div>
                     </div> <!-- form-body-inner -->
                 </div> <!-- activityFormBody -->
             </div>
@@ -178,6 +250,6 @@
     </main>
 
     <script src="/static/vue.global.prod.js" defer></script>
-    <script src="/static/app.js" defer></script>
+    <script src="/static/app.js?v=6" defer></script>
 </body>
 </html>

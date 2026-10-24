@@ -274,6 +274,20 @@
     flex-grow: 1;
 }
 
+/* Keep all three expanded Current Activity states anchored to the bottom.
+   History takes the available space, while the form keeps its natural height.
+   Actual collapse/expand remains a separate user choice. */
+#app > section.history-fills {
+    flex-grow: 1;
+}
+
+#app .history-fills #activities {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+}
+
+
 #app.form-collapsed #activities {
     flex: 1 1 auto;
     min-height: 0;
@@ -362,4 +376,346 @@
 .form-tabs .form-collapse-button:focus-visible {
     outline: 2px solid #3779d1;
     outline-offset: 2px;
+}
+
+/* Current Activity — one quiet, compact three-state control surface. */
+.form-tabs .current-tab {
+    min-width: 0;
+    max-width: 195px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* The final column and the bottom/right button anchor match in every state. */
+.current-ready {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, .9fr) 66px;
+    align-items: end;
+    column-gap: 8px;
+}
+
+.compact-field {
+    min-width: 0;
+    margin: 0;
+}
+
+.compact-field input,
+.compact-field select {
+    height: 38px;
+    min-width: 0;
+}
+
+/* Invisible hit area, no button chrome. The icon IS the control. */
+.primary-icon-button {
+    appearance: none;
+    display: grid;
+    place-items: center;
+    justify-self: end;
+    align-self: end;
+    flex: 0 0 66px;
+    box-sizing: border-box;
+    width: 66px;
+    height: 38px;
+    padding: 0;
+    margin: 0;
+    color: #2762b4;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    box-shadow: none;
+    cursor: pointer;
+    transition: color 150ms ease, opacity 150ms ease;
+}
+
+.primary-icon-button svg {
+    display: block;
+    width: 43px;
+    height: 43px;
+    overflow: visible;
+}
+
+/* Optical adjustment: a triangle carries more weight on its left side. */
+.play-button svg { transform: translateX(2px); }
+.primary-icon-button:hover:not(:disabled) { background: transparent; color: #174786; }
+.primary-icon-button:active:not(:disabled) svg { transform: scale(.93); }
+.play-button:active:not(:disabled) svg { transform: translateX(2px) scale(.93); }
+.primary-icon-button:focus-visible,
+.rating-button:focus-visible {
+    outline: 2px solid #3779d1;
+    outline-offset: 2px;
+}
+
+.current-running {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 66px;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.current-running textarea {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 106px;
+    min-height: 106px;
+    padding: 10px;
+    resize: vertical;
+    line-height: 1.45;
+}
+
+.current-running textarea::placeholder { color: #919cab; }
+
+.running-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 4px;
+}
+
+.running-timer {
+    display: block;
+    width: 100%;
+    margin: 1px 0 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -1.1px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    white-space: nowrap;
+    color: #253b55;
+}
+
+.stop-button { color: #cb555e; }
+.stop-button:hover:not(:disabled) { color: #a92e3a; }
+
+.rating-state { display: flex; flex-direction: column; gap: 12px; }
+.rating-question {
+    margin: 0;
+    color: #36445a;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.rating-controls {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.rating-button {
+    appearance: none;
+    box-sizing: border-box;
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    min-width: 0;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    color: #344762;
+    background: #edf2f8;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: none;
+    transition: color 150ms ease, background-color 150ms ease;
+}
+
+.rating-button:hover:not(:disabled) {
+    background: #d9e7f9;
+    color: #1856a6;
+}
+
+.rating-controls .skip-button {
+    margin-left: auto;
+    color: #768399;
+}
+.rating-controls .skip-button:hover:not(:disabled) { color: #3b4b63; }
+
+#saveStatus:empty { display: none; margin: 0; }
+#saveStatus:not(:empty) { margin-top: 9px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .primary-icon-button, .rating-button { transition: none; }
+}
+
+/* Three-state Current Activity always remains visible; the history grows above it. */
+.current-ready,
+.current-running,
+.rating-state {
+    padding-bottom: 7px;
+}
+
+/* Save status lives between the timer and Stop, without adding a new row
+   under the whole activity panel. The icon anchors to the same bottom edge
+   as Play and Skip. */
+.running-controls {
+    gap: 0;
+}
+.running-save-status {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    max-height: 34px;
+    margin: auto 0;
+    overflow: auto;
+    font-size: 10px;
+    line-height: 1.2;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+.running-save-status.saved { color: #16803c; }
+.running-save-status.unsaved { color: #b36b00; }
+.running-save-status.error { color: #c62828; }
+
+/* Past Activity: compact notes and a single bottom toolbar with
+   ratings on the left, action pictograms on the right. */
+.past-notes-field {
+    margin-bottom: 9px;
+}
+.past-notes-field textarea {
+    display: block;
+    min-height: 76px;
+    height: 76px;
+    resize: vertical;
+}
+.past-toolbar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 10px;
+    min-height: 35px;
+}
+.past-rating-field {
+    width: 150px;
+    flex: 0 1 150px;
+    min-width: 0;
+    margin-right: auto;
+}
+.past-rating-field select {
+    width: 100%;
+    height: 35px;
+    padding: 5px 6px;
+    font-size: 12px;
+}
+.past-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+    flex: 0 0 auto;
+}
+.past-icon-button {
+    appearance: none;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 5px;
+    box-shadow: none;
+    cursor: pointer;
+    transition: color 150ms ease, opacity 150ms ease;
+}
+.past-icon-button svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+}
+.past-icon-button:hover:not(:disabled) { background: transparent; }
+.past-icon-button:focus-visible {
+    outline: 2px solid #3779d1;
+    outline-offset: 2px;
+}
+.save-icon { color: #2868b6; }
+.save-icon:hover:not(:disabled) { color: #174786; }
+.cancel-icon { color: #69798d; }
+.cancel-icon:hover:not(:disabled) { color: #374459; }
+.delete-icon { color: #bf5963; }
+.delete-icon:hover:not(:disabled) { color: #9f3440; }
+
+/* In a vertical flex column, the generic 66px flex-basis would incorrectly
+   become button HEIGHT. Match the 38px Play and Skip hit area instead. */
+.running-controls .stop-button {
+    flex: 0 0 38px;
+}
+
+
+/* Switch tab contents in the same frame so the panel has one continuous
+   resize. Fade in the replacement; remove the old form from layout at once. */
+.form-body-inner {
+    position: relative;
+}
+.mode-switch-enter-active {
+    transition: opacity 180ms ease;
+}
+.mode-switch-leave-active {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+}
+.mode-switch-enter-from {
+    opacity: 0;
+}
+
+/* Past toolbar icons: Save · Delete · Cancel (Cancel is the primary exit). */
+.past-actions {
+    gap: 5px;
+}
+.past-actions .save-icon,
+.past-actions .delete-icon {
+    width: 36px;
+    height: 42px;
+}
+.past-actions .save-icon svg,
+.past-actions .delete-icon svg {
+    width: 28px;
+    height: 28px;
+}
+.past-actions .cancel-icon {
+    width: 52px;
+    height: 42px;
+    color: #566e8e;
+}
+.past-actions .cancel-icon svg {
+    width: 40px;
+    height: 40px;
+}
+.past-actions .cancel-icon:hover:not(:disabled) {
+    color: #243f64;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mode-switch-enter-active,
+    .mode-switch-leave-active {
+        transition: none;
+    }
+}
+
+/* Delete pictogram has finer strokes than Save, so increase its visual size. */
+.past-actions .delete-icon svg {
+    width: 30px;
+    height: 30px;
 }
