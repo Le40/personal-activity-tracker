@@ -5,9 +5,9 @@ import subprocess
 import sys
 import time
 import urllib.request
-from pathlib import Path
+from contextlib import redirect_stderr, redirect_stdout
 from ctypes import wintypes
-
+from pathlib import Path
 
 # --------------------------------------------------
 # APPLICATION SETTINGS
@@ -71,26 +71,27 @@ def find_edge():
 # --------------------------------------------------
 
 def run_server():
-    log = open(PROJECT_DIR / "tracker-server.log", "a", encoding="utf-8", buffering=1)
+    with open(
+        PROJECT_DIR / "tracker-server.log",
+        "a",
+        encoding="utf-8",
+        buffering=1,
+    ) as log, redirect_stdout(log), redirect_stderr(log):
 
-    sys.stdout = log
-    sys.stderr = log
+        import uvicorn
 
-    import uvicorn
+        from app.activities.models import Base
+        from app.database import engine
+        from app.main import app
 
-    from app.activities.models import Base
-    from app.database import engine
-    from app.main import app
+        Base.metadata.create_all(bind=engine)
 
-    # Create database tables if they don't exist.
-    Base.metadata.create_all(bind=engine)
-
-    uvicorn.run(
-        app,
-        host=HOST,
-        port=PORT,
-        log_level=LOG_LEVEL,
-    )
+        uvicorn.run(
+            app,
+            host=HOST,
+            port=PORT,
+            log_level=LOG_LEVEL,
+        )
 
 
 # --------------------------------------------------
@@ -189,7 +190,7 @@ def main():
             wait_for_server(server)
 
             # Open the application in a compact Edge window.
-            browser = subprocess.Popen([
+            subprocess.Popen([
                 str(edge),
                 f"--user-data-dir={EDGE_PROFILE}",
                 f"--app={URL}",

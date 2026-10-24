@@ -5,7 +5,6 @@ from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-
 # Determine the default database directory.
 if getattr(sys, "frozen", False):
     # Running as .exe
