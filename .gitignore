@@ -1,21 +1,26 @@
-# Virtual environment
+# Python
 .venv/
-
-# Python generated files
 __pycache__/
-*.pyc
+*.py[cod]
 
-# Local database
+# Testing and linting
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# SQLite
 *.db
+*.db-shm
+*.db-wal
 
 # Logs
 *.log
 
-# Environment variables
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Environment
 .env
-
-# Test cache
-.pytest_cache/
-
-# IDE settings
-.vscode/

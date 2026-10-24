@@ -107,7 +107,6 @@ def add_completed_activity(
     return activity
 
 
-# DELETES COMPLETED ACTIVITY
 @router.delete("/{activity_id:int}",  status_code=204)
 def delete_activity(
     activity_id, db: DbSession

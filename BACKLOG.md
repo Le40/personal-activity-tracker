@@ -2,18 +2,18 @@
 
 Ideas for future development. Not part of V1.
 
-## Activity Tracking
-- Pause and resume activities
-- Edit previously recorded activities
-- Planned tasks and target durations
-- Recurring activities
+## Activity Tracking - V2
+- Project / parent event for activities
+- Adjusting running activity start time
+- UI improvements
 
-## Daily Planning
+## Planning - V3
 - Daily goals and improvement targets
-- Optional tasks
+- ToDo's related to current activity
+- ToDo's overall
 - Daily reflections
 
-## Reporting
+## Reporting - V4
 - Daily reports and export
 - Sleep and fasting tracking
 - Activity statistics and trends

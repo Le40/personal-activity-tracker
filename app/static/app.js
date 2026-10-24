@@ -425,6 +425,7 @@ Vue.createApp({
                 await apiRequest(`${ACTIVITIES_URL}/${activity.id}`, { method: "DELETE" });
                 this.formMode = "current";
                 this.editingActivity = null;
+                this.formCollapsed = this.collapsedBeforeForm;
             });
         },
         async suggestPastTimes() {
@@ -451,7 +452,7 @@ Vue.createApp({
             let previousEnd = null;
             let suggestion = null;
 
-            // Find gaps between completed activities.computed: {
+            // Find gaps between completed activities.
             for (const activity of completed) {
                 const start = parseTimestamp(activity.started_at);
                 const end = parseTimestamp(activity.ended_at);

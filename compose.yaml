@@ -1,0 +1,12 @@
+services:
+  patrick:
+    build: .
+    ports:
+      - "127.0.0.1:8001:8000"
+    environment:
+      PAT_DB_PATH: /data/activity_tracker.db
+    volumes:
+      - patrick-data:/data
+
+volumes:
+  patrick-data:

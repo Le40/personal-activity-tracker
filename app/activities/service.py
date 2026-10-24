@@ -34,6 +34,8 @@ def get_activities(
         Activity.ended_at <= day_end    
     )
 
+    statement = statement.order_by(Activity.started_at)
+
     return db.scalars(statement).all()
 
 
