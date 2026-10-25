@@ -1,10 +1,11 @@
-# PATRICK — Personal Activity Tracker
+# PAT — Personal Activity Tracker
 
 [![Python Tests](https://github.com/Le40/personal-activity-tracker/actions/workflows/tests.yml/badge.svg)](https://github.com/Le40/personal-activity-tracker/actions/workflows/tests.yml)
 
 A small, local activity tracker for recording how you actually spend your day. Start an activity, switch to another, and review your history in a compact window.
 
 Built as a practical Python/FastAPI backend portfolio project, with a deliberately simple architecture and no account or cloud service required.
+The frontend code was generated with AI, while its design, functionality, and iterative refinement were directed and tested by me.
 
 
 ## Features
@@ -17,23 +18,23 @@ Built as a practical Python/FastAPI backend portfolio project, with a deliberate
 
 Activity types: Work, Exercise, Meal, Break, Sleep, and Other. For reporting, a day runs from **05:00 to 05:00** in the **Europe/Bratislava** timezone.
 
-## Run PATRICK
+## Run PAT
 
 ### Option 1 — Portable Windows executable (easiest)
 
 1. Download `PAT.exe` from the [GitHub Releases page](https://github.com/Le40/personal-activity-tracker/releases) once a release is available.
 2. Put it in a writable folder and double-click it.
-3. PATRICK opens in a small **Microsoft Edge** app window.
+3. PAT opens in a small **Microsoft Edge** app window.
 
 On first launch, the application creates its SQLite database alongside the executable:
 
 ```text
-PATRICK/
+PAT/
 ├── PAT.exe
 └── activity_tracker.db
 ```
 
-Keep `activity_tracker.db` when updating or moving the application: **that file contains your activity history**. Close PATRICK before copying it for backup. Microsoft Edge is required for this launcher; Python and Docker are not.
+Keep `activity_tracker.db` when updating or moving the application: **that file contains your activity history**. Close PAT before copying it for backup. Microsoft Edge is required for this launcher; Python and Docker are not.
 
 ### Option 2 — Docker
 
@@ -45,7 +46,7 @@ From the repository root:
 docker compose up --build -d
 ```
 
-Open **http://localhost:8001**. To stop PATRICK:
+Open **http://localhost:8001**. To stop PAT:
 
 ```bash
 docker compose down
@@ -67,6 +68,8 @@ python launcher.py
 ```
 
 `launcher.py` creates the database tables if needed, starts FastAPI, and opens the compact Edge window.
+
+For subsequent launches, simply run start_tracker.bat.
 
 To run the API directly, without the Windows launcher:
 
@@ -126,7 +129,7 @@ Tests cover activity lifecycle, input validation, time overlaps, history queries
 
 ## Scope
 
-PATRICK is intentionally a **single-user, local-first utility**. It does not provide authentication, synchronization, automatic activity detection, or AI-based recommendations. The priority is reliable manual tracking and straightforward, maintainable backend code.
+PAT is intentionally a **single-user, local-first utility**. It does not provide authentication, synchronization, automatic activity detection, or AI-based recommendations. The priority is reliable manual tracking and straightforward, maintainable backend code.
 
 ## License
 
