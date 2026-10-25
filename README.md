@@ -1,5 +1,7 @@
 # PATRICK — Personal Activity Tracker
 
+[![Python Tests](https://github.com/Le40/personal-activity-tracker/actions/workflows/tests.yml/badge.svg)](https://github.com/Le40/personal-activity-tracker/actions/workflows/tests.yml)
+
 A small, local activity tracker for recording how you actually spend your day. Start an activity, switch to another, and review your history in a compact window.
 
 Built as a practical Python/FastAPI backend portfolio project, with a deliberately simple architecture and no account or cloud service required.

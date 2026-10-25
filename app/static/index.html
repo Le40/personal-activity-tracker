@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Activity Tracker</title>
     <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="/static/ui-additions.css?v=8">
+    <link rel="stylesheet" href="/static/ui.css?v=10">
 </head>
 <body>
     <main id="app" v-cloak>
         <h1>Activity Tracker</h1>
 
-        <section aria-labelledby="historyHeading" :class="{ 'history-fills': formMode === 'current' }">
+        <section aria-labelledby="historyHeading" class="history-fills">
             <div class="section-header">
                 <h2 id="historyHeading">Activity History</h2>
 
@@ -26,48 +26,41 @@
                 >
             </div>
             <ul id="activities">
-                <li v-for="activity in history" :key="activity.id">
-                    <button type="button" class="history-item" :disabled="busy"
-                            @click="changeMode('edit', activity)" title="Edit activity">
+                <li v-for="activity in visibleHistory" :key="activity.id">
+                    <button type="button" class="history-item" :class="{ 'is-running': !activity.ended_at }"
+                            :disabled="busy" @click="changeMode('edit', activity)" :title="historyTooltip(activity)">
                         <span class="history-time">
-                            {{ formatTime(activity.started_at) }} – {{ formatTime(activity.ended_at) }}
+                            {{ formatTime(activity.started_at) }}<template v-if="activity.ended_at"> – {{ formatTime(activity.ended_at) }}</template>
                         </span>
-                        <span class="history-name" :title="displayName(activity)">
-                            {{ displayName(activity) }}
-                        </span>
+                        <span class="history-name">{{ displayName(activity) }}</span>
                         <span class="history-details">
-                        <span class="history-type">{{ typeLabel(activity.activity_type) }}</span>
-                        <span class="history-separator">|</span>
-                        <span class="history-duration">
-                            {{ formatDuration(activity.started_at, activity.ended_at) }}
+                            <span class="history-type">{{ typeLabel(activity.activity_type) }}</span>
+                            <span class="history-separator">|</span>
+                            <span class="history-duration" :class="{ 'is-running': !activity.ended_at }">
+                                {{ activity.ended_at ? formatDuration(activity.started_at, activity.ended_at) : 'Running' }}
+                            </span>
                         </span>
-                    </span>
                     </button>
                 </li>
-                <li v-if="!history.length" class="empty-history">No completed activities for this day.</li>
+                <li v-if="!visibleHistory.length" class="empty-history">No activities for this day.</li>
             </ul>
         </section>
 
         <section class="activity-section" aria-label="Activity form">
             <div class="form-tabs" role="group" aria-label="Activity mode">
-                <button class="mode-tab current-tab" type="button" :aria-pressed="formMode === 'current'"
-                        :disabled="busy" :title="currentTabLabel" @click="changeMode('current')">
-                    {{ formMode === 'current' ? currentTabLabel : 'Current activity' }}
+                <button class="mode-tab current-tab" :class="{ 'running-tab': activeActivity }"
+                        type="button" :aria-pressed="formMode === 'current'" :disabled="busy"
+                        :aria-expanded="formMode === 'current' && activeActivity ? !formCollapsed : undefined"
+                        :title="currentTabLabel" @click="changeMode('current')">
+                    <template v-if="activeActivity">
+                        <span class="tab-activity-name">{{ activeActivity.name?.trim() || typeLabel(activeActivity.activity_type) }}</span>
+                        <span class="tab-time">{{ timerText }}</span>
+                    </template>
+                    <template v-else>{{ formMode === 'current' ? currentTabLabel : 'Current activity' }}</template>
                 </button>
                 <button class="mode-tab" type="button" :aria-pressed="formMode !== 'current'"
-                        :disabled="busy" @click="changeMode('add')">{{ formMode === 'edit' ? 'Edit activity' : 'Past activity' }}</button>
-                <button
-                    type="button"
-                    class="form-collapse-button"
-                    v-if="formMode !== 'current'"
-                    :aria-expanded="!formCollapsed"
-                    aria-controls="activityFormBody"
-                    :title="formCollapsed ? 'Expand form' : 'Collapse form'"
-                    :aria-label="formCollapsed ? 'Expand form' : 'Collapse form'"
-                    @click="formCollapsed = !formCollapsed"
-                >
-                    {{ formCollapsed ? '+' : '−' }}
-                </button>
+                        :disabled="busy" :aria-expanded="formMode !== 'current' ? !formCollapsed : undefined"
+                        @click="onPastTabClick">{{ formMode === 'edit' ? 'Edit activity' : 'Past activity' }}</button>
             </div>
 
             <div class="activity-panel">
@@ -106,7 +99,6 @@
                                               v-model="form.notes" :disabled="busy" @input="markUnsaved"></textarea>
                                 </div>
                                 <div class="running-controls">
-                                    <span class="running-timer" aria-label="Elapsed time">{{ timerText }}</span>
                                     <span v-if="statusMessage" class="running-save-status" role="status"
                                           aria-live="polite" :class="statusState" :title="statusMessage">{{ runningStatusText }}</span>
                                     <button class="primary-icon-button stop-button" type="button" aria-label="Stop activity"
@@ -155,7 +147,7 @@
                                 </div>
                             </div>
 
-                            <div id="timeFields" class="form-row field">
+                            <div v-if="!isEditingRunning" id="timeFields" class="form-row field">
                                 <div>
                                     <label for="startedAt">Start time</label>
                                     <div class="datetime-control">
@@ -190,14 +182,14 @@
                                 </div>
                             </div>
 
-                            <div class="field past-notes-field">
+                            <div v-if="!isEditingRunning" class="field past-notes-field">
                                 <label class="visually-hidden" for="activityNotes">Notes</label>
                                 <textarea id="activityNotes" rows="3" placeholder="Notes (optional)..."
                                         v-model="form.notes" :disabled="busy" @input="markUnsaved"></textarea>
                             </div>
 
                             <div class="past-toolbar">
-                                <div v-if="supportsRating" class="past-rating-field">
+                                <div v-if="supportsRating && !isEditingRunning" class="past-rating-field">
                                     <label for="easeRating">Ease of work</label>
                                     <select id="easeRating" v-model="form.ease_rating" :disabled="busy" @change="markUnsaved">
                                         <option value="">Not rated</option>
@@ -250,6 +242,6 @@
     </main>
 
     <script src="/static/vue.global.prod.js" defer></script>
-    <script src="/static/app.js?v=6" defer></script>
+    <script src="/static/app.js?v=10" defer></script>
 </body>
 </html>

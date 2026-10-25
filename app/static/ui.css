@@ -6,7 +6,7 @@
     --history-height: 160px;
     --history-font-size: 11px;
     --history-date-picker-width: 130px;
-    --collapse-duration: 250ms;
+    --collapse-duration: 360ms;
 }
 
 /* Classic attached folder tabs: selected tab and form panel are one surface. */
@@ -71,6 +71,12 @@
     background: #fff;
     border-radius: 8px;
     min-width: 0;
+    /* Keep the slim outlined panel visible even when a tab is collapsed. */
+    transition: padding-block var(--collapse-duration) ease;
+}
+
+#app.form-collapsed .activity-panel {
+    padding-block: 11px;
 }
 
 /* Compact native date-time pickers, with the browser's calendar icon. */
@@ -155,11 +161,16 @@
     padding: 0;
     margin: 0;
 
+    display: flex;
+    flex-direction: column;
     height: var(--history-height);
     overflow-y: auto;
     overscroll-behavior-y: contain;
 }
-#activities li { border-bottom: 1px solid #eee; }
+#activities li { flex: 0 0 auto; border-bottom: 1px solid #eee; }
+/* Few activities? Keep the newest row against the pane's bottom edge.
+   Overflowing list? Auto margin becomes zero and older rows scroll above. */
+#activities li:first-child:not(.empty-history) { margin-top: auto; }
 #activities li:last-child { border-bottom: 0; }
 #activities .history-item {
     display: grid;
@@ -331,51 +342,14 @@
 @media (prefers-reduced-motion: reduce) {
     #app > section[aria-labelledby="historyHeading"],
     #activityFormBody,
-    .activity-panel .section-header {
+    .activity-panel .section-header,
+    .activity-panel {
         transition: none;
     }
 }
 
 #app.form-collapsed .activity-panel .section-header {
     margin-bottom: 0;
-}
-
-/* Collapse / expand button beside the activity tabs */
-.form-tabs .form-collapse-button {
-    appearance: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin-left: auto;
-    align-self: center;
-
-    flex: 0 0 26px;
-    width: 26px;
-    min-width: 26px;
-    height: 26px;
-    padding: 0;
-
-    font-family: inherit;
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1;
-
-    color: #586476;
-    background: #f5f7fa;
-    border: 1px solid #c6cdd8;
-    border-radius: 5px;
-
-    cursor: pointer;
-}
-
-.form-tabs .form-collapse-button:hover {
-    background: #e7edf6;
-}
-
-.form-tabs .form-collapse-button:focus-visible {
-    outline: 2px solid #3779d1;
-    outline-offset: 2px;
 }
 
 /* Current Activity — one quiet, compact three-state control surface. */
@@ -401,7 +375,7 @@
 /* The final column and the bottom/right button anchor match in every state. */
 .current-ready {
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, .9fr) 66px;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, .9fr) 52px;
     align-items: end;
     column-gap: 8px;
 }
@@ -424,9 +398,9 @@
     place-items: center;
     justify-self: end;
     align-self: end;
-    flex: 0 0 66px;
+    flex: 0 0 52px;
     box-sizing: border-box;
-    width: 66px;
+    width: 52px;
     height: 38px;
     padding: 0;
     margin: 0;
@@ -459,7 +433,7 @@
 
 .current-running {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 66px;
+    grid-template-columns: minmax(0, 1fr) 52px;
     gap: 8px;
     align-items: stretch;
 }
@@ -481,23 +455,9 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    justify-content: space-between;
-    gap: 12px;
-    padding-top: 4px;
-}
-
-.running-timer {
-    display: block;
-    width: 100%;
-    margin: 1px 0 0;
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1.25;
-    letter-spacing: -1.1px;
-    font-variant-numeric: tabular-nums;
-    text-align: center;
-    white-space: nowrap;
-    color: #253b55;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 0;
 }
 
 .stop-button { color: #cb555e; }
@@ -512,17 +472,18 @@
 }
 
 .rating-controls {
-    display: flex;
-    align-items: flex-end;
-    gap: 5px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) 52px;
+    align-items: end;
+    gap: 6px;
 }
 
 .rating-button {
     appearance: none;
     box-sizing: border-box;
-    flex: 0 0 38px;
-    width: 38px;
-    height: 38px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
     min-width: 0;
     padding: 0;
     font-size: 16px;
@@ -542,7 +503,7 @@
 }
 
 .rating-controls .skip-button {
-    margin-left: auto;
+    margin-left: 0;
     color: #768399;
 }
 .rating-controls .skip-button:hover:not(:disabled) { color: #3b4b63; }
@@ -554,15 +515,14 @@
     .primary-icon-button, .rating-button { transition: none; }
 }
 
-/* Three-state Current Activity always remains visible; the history grows above it. */
+/* Keep a little breathing room under each expanded Current Activity state. */
 .current-ready,
 .current-running,
 .rating-state {
     padding-bottom: 7px;
 }
 
-/* Save status lives between the timer and Stop, without adding a new row
-   under the whole activity panel. The icon anchors to the same bottom edge
+/* Save errors live above Stop. The icon anchors to the same bottom edge
    as Play and Skip. */
 .running-controls {
     gap: 0;
@@ -572,7 +532,7 @@
     box-sizing: border-box;
     width: 100%;
     max-height: 34px;
-    margin: auto 0;
+    margin: 0 0 auto;
     overflow: auto;
     font-size: 10px;
     line-height: 1.2;
@@ -718,4 +678,72 @@
 .past-actions .delete-icon svg {
     width: 30px;
     height: 30px;
+}
+
+/* Running sessions share History, but only for the active reporting day. */
+#activities .history-item.is-running {
+    background: #f1f9f3;
+    font-weight: 700;
+}
+#activities .history-item.is-running:hover { background: #e4f2e8; }
+#activities .history-duration.is-running {
+    color: #17804c;
+    font-weight: 700;
+}
+#activities .history-details {
+    grid-template-columns: 41px 6px minmax(41px, auto);
+}
+#activities .history-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-wrap: normal;
+}
+
+/* The History list takes the remaining height above every form, Past included. */
+#app > section.history-fills { flex: 1 1 auto; }
+#app > .activity-section {
+    flex: 0 0 auto;
+    margin-bottom: 0;
+}
+
+/* The Running tab is both a status readout and a collapse control. */
+.form-tabs .mode-tab.running-tab {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    max-width: 204px;
+    min-width: 0;
+}
+.running-tab .tab-activity-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.running-tab .tab-time {
+    flex: 0 0 auto;
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    color: #18804b;
+}
+
+/* Collapse is shared by Running and Past/Edit. The panel remains visible
+   while its content animates closed, matching the original collapsed hint. */
+
+/* Running edit: we will unlock start-time changes when backend validation exists. */
+#timeFields.editing-running-times { grid-template-columns: minmax(0, 1fr); }
+#timeFields.editing-running-times > div { max-width: 158px; }
+#timeFields.editing-running-times .datetime-control { background: #f5f6f8; }
+
+/* Animate the panel itself between tab modes. History and the tabs then
+   remain attached to it instead of leaving a blank gap while it shrinks. */
+.activity-section.mode-height-transition .activity-panel {
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: none !important;
+}
+.activity-section.mode-height-transition #activityFormBody {
+    transition: none !important;
 }

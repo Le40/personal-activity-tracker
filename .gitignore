@@ -24,3 +24,8 @@ dist/
 
 # Environment
 .env
+
+# VS code
+.vscode/
+
+BACKLOG.md

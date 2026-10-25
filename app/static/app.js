@@ -7,7 +7,6 @@ const AUTOSAVE_DELAY_MS = 5000;         // Autosave after 5 seconds
 const REPORTING_DAY_START_HOUR = 5;     // New day starts at 05:00
 const DEFAULT_ACTIVITY_TYPE = "work";   // Initially selected activity type
 
-const NOTES_PREVIEW_CHARS = 25;         // Characters from notes shown in history
 const MIN_GAP_MINUTES = 5;              // Minimum gap suggested for past activities
 const GAP_LOOKBACK_DAYS = 2;            // Additional days searched for available gaps
 const DEFAULT_PAST_DURATION_MINUTES = 60;
@@ -117,6 +116,7 @@ Vue.createApp({
             formMode: "current", // current | add | edit
             form: emptyForm(),
             formCollapsed: false,
+            runningCollapsed: false, // Restore this when returning from Past/Edit
             activeActivity: null,
             pendingRatingActivity: null, // Recently stopped Work activity awaiting rating
             editingActivity: null,
@@ -131,6 +131,8 @@ Vue.createApp({
             now: Date.now(),
             autosaveTimer: null,
             clockTimer: null,
+            modeHeightAnimation: null,
+            historyResizeObserver: null,
             confirmMessage: "",
         };
     },
@@ -143,8 +145,20 @@ Vue.createApp({
         currentTabLabel() {
             const activity = this.pendingRatingActivity ?? this.activeActivity;
             if (!activity) return "Current activity";
-            const name = activity.name?.trim() || "Unnamed";
-            return `${name} | ${this.typeLabel(activity.activity_type)}`;
+            const name = activity.name?.trim() || this.typeLabel(activity.activity_type);
+            return this.activeActivity
+                ? `${name} | ${this.typeLabel(activity.activity_type)} | ${this.timerText}`
+                : `${name} | ${this.typeLabel(activity.activity_type)}`;
+        },
+        isEditingRunning() {
+            return this.formMode === "edit" && this.editingActivity?.ended_at == null;
+        },
+        visibleHistory() {
+            // The current session belongs only to the currently selected reporting day.
+            if (!this.activeActivity || this.historyDate !== reportingDay()) return this.history;
+            return [...this.history, this.activeActivity].sort(
+                (a, b) => parseTimestamp(a.started_at) - parseTimestamp(b.started_at)
+            );
         },
         runningStatusText() {
             if (this.statusMessage === "● Unsaved changes") return "● Unsaved";
@@ -174,13 +188,9 @@ Vue.createApp({
     },
 
     watch: {
-        history() {
-            this.$nextTick(() => {
-                const list = document.getElementById("activities");
-                if (list) {
-                    list.scrollTop = list.scrollHeight;
-                }
-            });
+        visibleHistory() {
+            // Keep the latest entry in view when records are added or replaced.
+            this.$nextTick(() => this.scrollHistoryToBottom());
         },
 
         formCollapsed(collapsed) {
@@ -193,6 +203,11 @@ Vue.createApp({
         formatTime,
         formatDuration,
 
+        scrollHistoryToBottom() {
+            const list = document.getElementById("activities");
+            if (list) list.scrollTop = list.scrollHeight;
+        },
+
         typeLabel(type) {
             return this.activityOptions.find(item => item.value === type)?.label ?? type;
         },
@@ -202,14 +217,12 @@ Vue.createApp({
             if (name) return name;
 
             const notes = activity.notes?.trim();
-
-            if (notes) {
-                return notes.length > NOTES_PREVIEW_CHARS
-                    ? `${notes.slice(0, NOTES_PREVIEW_CHARS)}…`
-                    : notes;
-            }
-
-            return "";
+            // Show only the first line, and let CSS truncate to the available width.
+            return notes ? notes.split(/\r?\n/, 1)[0] : "";
+        },
+        historyTooltip(activity) {
+            // Native title tooltips preserve newlines in the full notes.
+            return activity.notes?.trim() || this.displayName(activity);
         },
         datetimeLabel(value) {
             if (!value) return "dd.mm.yyyy --:--";
@@ -231,12 +244,11 @@ Vue.createApp({
                 activity_type: activity.activity_type,
                 notes: activity.notes ?? "",
                 ease_rating: activity.ease_rating == null ? "" : String(activity.ease_rating),
-                started_at: activity.ended_at ? localDatetimeValue(activity.started_at) : "",
+                started_at: localDatetimeValue(activity.started_at),
                 ended_at: activity.ended_at ? localDatetimeValue(activity.ended_at) : ""
             } : emptyForm(type);
             this.formDirty = false;
-            this.setStatus(this.formMode === "current" && this.activeActivity ? "● Saved" : "",
-                           this.formMode === "current" && this.activeActivity ? "saved" : "");
+            this.setStatus("");
         },
         onTypeChanged() {
             if (!this.supportsRating) this.form.ease_rating = "";
@@ -247,7 +259,8 @@ Vue.createApp({
             // Before an activity starts, values are a draft, not an unsaved DB record.
             if (this.formMode === "current" && !this.activeActivity) return;
             this.formDirty = true;
-            this.setStatus("● Unsaved changes", "unsaved");
+            // Normal autosave is silent. Only failures need a status message.
+            this.setStatus("");
             if (this.formMode !== "current") return;
             clearTimeout(this.autosaveTimer);
             this.autosaveTimer = setTimeout(() => {
@@ -256,10 +269,15 @@ Vue.createApp({
             }, AUTOSAVE_DELAY_MS);
         },
         formData() {
+            // Editing a running activity hides Notes. Preserve autosaved notes
+            // instead of replacing them with the form's hidden/stale value.
+            const notes = this.isEditingRunning
+                ? this.editingActivity.notes
+                : this.form.notes.trim() || null;
             return {
                 name: this.form.name.trim() || null,
                 activity_type: this.form.activity_type,
-                notes: this.form.notes.trim() || null,
+                notes,
                 ease_rating: this.supportsRating && this.form.ease_rating !== ""
                     ? Number(this.form.ease_rating) : null
             };
@@ -336,6 +354,8 @@ Vue.createApp({
         },
 
         async onHistoryDateChange() {
+            // Browsing the history also dismisses a pending rating.
+            if (this.pendingRatingActivity) this.skipRating();
             try {
                 await this.loadHistory();
             } catch (error) {
@@ -361,25 +381,85 @@ Vue.createApp({
                 this.busy = false;
             }
         },
+        onPastTabClick() {
+            if (this.formMode === "current") {
+                // First click always opens Past Activity, even if it was collapsed.
+                this.changeMode("add");
+            } else if (!this.busy) {
+                // The same tab toggles Add and Edit forms without losing draft input.
+                this.modeHeightAnimation?.cancel();
+                this.modeHeightAnimation = null;
+                document.querySelector(".activity-section").classList.remove("mode-height-transition");
+                this.formCollapsed = !this.formCollapsed;
+            }
+        },
         async changeMode(mode, activity = null) {
             if (this.busy) return;
-            if (mode === this.formMode && (mode !== "edit" || activity?.id === this.editingActivity?.id)) return;
-            if (this.formMode === "edit" && this.formDirty) {
+            if (mode === this.formMode && (mode !== "edit" || activity?.id === this.editingActivity?.id)) {
+                if (this.pendingRatingActivity) {
+                    this.skipRating();
+                } else if (mode === "current" && this.activeActivity) {
+                    // Only the Running view toggles by clicking its tab.
+                    if (this.formDirty && !await this.runAction(() => this.saveCurrent())) return;
+                    this.modeHeightAnimation?.cancel();
+                    this.modeHeightAnimation = null;
+                    document.querySelector(".activity-section").classList.remove("mode-height-transition");
+                    this.runningCollapsed = !this.runningCollapsed;
+                    this.formCollapsed = this.runningCollapsed;
+                }
+                return;
+            }
+            if ((this.formMode === "edit" || this.formMode === "add") && this.formDirty) {
                 if (!await this.confirmAction("Discard unsaved changes?")) return;
             }
             if (this.formMode === "current" && this.activeActivity && this.formDirty) {
                 if (!await this.runAction(() => this.saveCurrent())) return;
             }
+            if (this.formMode === "current" && this.activeActivity) {
+                this.runningCollapsed = this.formCollapsed;
+            }
             clearTimeout(this.autosaveTimer);
-            // Current Activity is always expanded. Past forms may still be collapsed.
-            this.formCollapsed = false;
+            // Capture the previous height before Vue replaces the form. Without
+            // this, switching from a tall Past form to collapsed Running jumps.
+            const section = document.querySelector(".activity-section");
+            const panel = section.querySelector(".activity-panel");
+            const previousHeight = panel.getBoundingClientRect().height;
+            this.modeHeightAnimation?.cancel();
+            this.modeHeightAnimation = null;
+            section.classList.add("mode-height-transition");
 
+            // The rating is a one-time prompt; navigating away skips it.
+            this.pendingRatingActivity = null;
             this.formMode = mode;
-            // Leaving the Past form returns to the live state (Ready or Running),
-            // not to a rating prompt left over from a previously stopped activity.
-            if (mode === "current") this.pendingRatingActivity = null;
-            this.editingActivity = mode === "edit" ? activity : null;
-            this.populateForm(mode === "edit" ? activity : mode === "current" ? this.activeActivity : null);
+            this.formCollapsed = mode === "current" && this.activeActivity
+                ? this.runningCollapsed : false;
+            // If Notes were just autosaved, use the refreshed running record.
+            const chosen = activity?.id === this.activeActivity?.id
+                ? this.activeActivity : activity;
+            this.editingActivity = mode === "edit" ? chosen : null;
+            this.populateForm(mode === "edit" ? chosen : mode === "current" ? this.activeActivity : null);
+
+            // Animate one continuous height change, even when the two forms
+            // have different natural heights or the destination is collapsed.
+            await this.$nextTick();
+            const nextHeight = panel.getBoundingClientRect().height;
+            if (Math.abs(previousHeight - nextHeight) < 1 ||
+                    window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                section.classList.remove("mode-height-transition");
+            } else {
+                const animation = panel.animate([
+                    { height: `${previousHeight}px` },
+                    { height: `${nextHeight}px` }
+                ], { duration: 360, easing: "ease-in-out" });
+                this.modeHeightAnimation = animation;
+                const finish = () => {
+                    if (this.modeHeightAnimation !== animation) return;
+                    this.modeHeightAnimation = null;
+                    section.classList.remove("mode-height-transition");
+                };
+                animation.addEventListener("finish", finish, { once: true });
+                animation.addEventListener("cancel", finish, { once: true });
+            }
             if (mode === "add") {
                 try {
                     await this.suggestPastTimes();
@@ -390,14 +470,16 @@ Vue.createApp({
         },
         async saveCurrent() {
             if (!this.activeActivity) return;
-            this.setStatus("Saving...");
             await apiRequest(`${ACTIVITIES_URL}/${this.activeActivity.id}`,
                              jsonOptions("PUT", this.formData()));
         },
         async startActivity() {
-            await this.runAction(async () => {
+            if (await this.runAction(async () => {
                 await apiRequest(`${ACTIVITIES_URL}/start`, jsonOptions("POST", this.formData()));
-            });
+            })) {
+                this.runningCollapsed = false;
+                this.formCollapsed = false;
+            }
         },
         async saveActivity() {
             if (this.formMode === "current") {
@@ -405,25 +487,31 @@ Vue.createApp({
                 return;
             }
             await this.runAction(async () => {
-                const data = { ...this.formData(), ...this.completedTimestamps() };
+                const data = this.isEditingRunning
+                    ? this.formData() // Running timestamps cannot be edited until backend support exists.
+                    : { ...this.formData(), ...this.completedTimestamps() };
                 const url = this.formMode === "edit"
                     ? `${ACTIVITIES_URL}/${this.editingActivity.id}` : ACTIVITIES_URL;
                 const method = this.formMode === "edit" ? "PUT" : "POST";
                 await apiRequest(url, jsonOptions(method, data));
+                this.pendingRatingActivity = null;
                 this.formMode = "current";
                 this.editingActivity = null;
-                this.formCollapsed = false;
+                this.formCollapsed = Boolean(this.activeActivity && this.runningCollapsed);
             });
         },
         async stopActivity() {
-            await this.runAction(async () => {
+            if (await this.runAction(async () => {
                 if (this.formDirty) await this.saveCurrent();
                 const stopped = await apiRequest(`${ACTIVITIES_URL}/stop`, { method: "POST" });
                 const type = this.activityOptions.find(
                     item => item.value === stopped.activity_type
                 );
                 this.pendingRatingActivity = type?.supports_ease_rating ? stopped : null;
-            });
+            })) {
+                this.runningCollapsed = false;
+                this.formCollapsed = false;
+            }
         },
         async finishRating(rating) {
             if (!this.pendingRatingActivity) return;
@@ -455,8 +543,10 @@ Vue.createApp({
             }
             await this.runAction(async () => {
                 await apiRequest(`${ACTIVITIES_URL}/${activity.id}`, { method: "DELETE" });
+                this.pendingRatingActivity = null;
                 this.formMode = "current";
                 this.editingActivity = null;
+                this.formCollapsed = this.activeActivity ? this.runningCollapsed : false;
             });
         },
         async suggestPastTimes() {
@@ -526,10 +616,19 @@ Vue.createApp({
 
     async mounted() {
         this.clockTimer = setInterval(() => { this.now = Date.now(); }, 1000);
+
+        // The History pane changes height as the form expands/collapses.
+        // Keep the newest activity visible throughout that transition.
+        const list = document.getElementById("activities");
+        this.historyResizeObserver = new ResizeObserver(() => this.scrollHistoryToBottom());
+        this.historyResizeObserver.observe(list);
+
         try {
             await this.loadOptions();
             await this.loadActivities();
             this.populateForm(this.activeActivity);
+            await this.$nextTick();
+            this.scrollHistoryToBottom();
         } catch (error) {
             this.setStatus(error.message, "error");
         }
@@ -537,5 +636,6 @@ Vue.createApp({
     beforeUnmount() {
         clearInterval(this.clockTimer);
         clearTimeout(this.autosaveTimer);
+        this.historyResizeObserver?.disconnect();
     }
 }).mount("#app");
